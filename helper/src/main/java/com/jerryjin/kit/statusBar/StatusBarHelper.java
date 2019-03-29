@@ -1,9 +1,12 @@
-package com.ci123.babyweekend.tags;
+package com.jerryjin.kit.statusBar;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
+
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -13,14 +16,24 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 /**
  * Author: Jerry
  * Generated at: 2019/3/13 9:58
+ * GitHub: https://github.com/JerryJin93
+ * Blog:
  * WeChat: enGrave93
+ * Version: 1.0.0
  * Description:
  */
 @SuppressWarnings("WeakerAccess")
 public class StatusBarHelper {
 
+    /**
+     * The margin top of the top edge of the decor view by default, which equals to status bar height.
+     */
+    public static final int DEFAULT_NOTCH_MARGIN_TOP = 44;
+    private static final String TAG = StatusBarHelper.class.getSimpleName();
+
     public static void setStatusBarBackgroundColor(Activity activity, int backgroundColor) {
         if (activity == null) {
+            Log.e(TAG, "Null given activity.");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -28,7 +41,7 @@ public class StatusBarHelper {
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             activity.getWindow().setStatusBarColor(backgroundColor);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setTransparentStatusBar(activity);
+            setTranslucentStatusBar(activity, true);
             SystemBarTintManager tintManager = new SystemBarTintManager(activity);
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setStatusBarTintColor(backgroundColor);
@@ -36,8 +49,13 @@ public class StatusBarHelper {
         }
     }
 
-    public static void setTransparentStatusBar(Activity activity) {
+    @SuppressLint("ObsoleteSdkInt")
+    public static void setTranslucentStatusBar(Activity activity, boolean fitViews) {
         if (activity == null) {
+            Log.e(TAG, "Null given activity.");
+            return;
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -48,12 +66,16 @@ public class StatusBarHelper {
         } else {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
+        if (fitViews) {
+            fitViews(activity);
+        }
     }
 
     // 需要判断，在Android M版本以下是无法改变状态栏字体的颜色的，这时候只能调节状态栏颜色或顶部导航栏颜色以表现出沉浸状态栏的效果*
     @TargetApi(Build.VERSION_CODES.M)
     public static void toggleStatusBarTextColor(Activity activity, boolean darkMode) {
         if (activity == null) {
+            Log.e(TAG, "Null given activity.");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -64,6 +86,7 @@ public class StatusBarHelper {
 
     private static void fitViews(Activity activity) {
         if (activity == null) {
+            Log.e(TAG, "Null given activity.");
             return;
         }
         ViewGroup parent = activity.findViewById(android.R.id.content);
@@ -74,6 +97,15 @@ public class StatusBarHelper {
                 child.setFitsSystemWindows(true);
                 ((ViewGroup) child).setClipToPadding(true);
             }
+        }
+    }
+
+    public static boolean isLightColor(int color) {
+        double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
+        if (darkness < 0.5) {
+            return true; // It's a light color
+        } else {
+            return false; // It's a dark color
         }
     }
 }
