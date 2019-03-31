@@ -33,6 +33,7 @@ public class StatusBarHelper {
      */
     public static final int DEFAULT_NOTCH_MARGIN_TOP = 44;
 
+    public static final int DEFAULT_OFFSET = 20;
 
     private static final String TAG = StatusBarHelper.class.getSimpleName();
 
