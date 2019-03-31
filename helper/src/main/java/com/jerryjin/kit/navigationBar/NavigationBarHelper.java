@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -20,7 +21,7 @@ import java.lang.reflect.Method;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.0
+ * Version: 1.0.1
  * Description: A helper for navigation bar of Android.
  */
 @SuppressWarnings("WeakerAccess")
@@ -29,6 +30,10 @@ public class NavigationBarHelper {
      * Error code for Navigation Bar related method.
      */
     public static final int ERR_CODE = -1;
+    /**
+     * Default color for navigation bar if you want to change its color from default one.
+     */
+    public static final int DEFAULT_COLOR_FOR_CUSTOMIZED_NAVIGATION_BAR = Color.LTGRAY;
     private static final String TAG = NavigationBarHelper.class.getSimpleName();
 
     private NavigationBarHelper() {
@@ -109,6 +114,27 @@ public class NavigationBarHelper {
         return activityHeight != remainHeight;
     }
 
+    public static boolean isNavBarShowForImmersive(Activity activity) {
+        if (null == activity) {
+            Log.e(TAG, "Null given activity.");
+            return false;
+        }
+        /*
+          获取应用区域高度
+         */
+        Rect outRect = new Rect();
+        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(outRect);
+        int activityHeight = outRect.height();
+        /*
+          屏幕物理高度 减去 状态栏高度
+         */
+        int remainHeight = getRealHeight(activity);
+        /*
+          剩余高度跟应用区域高度相等 说明导航栏没有显示 否则相反
+         */
+        return activityHeight != remainHeight;
+    }
+
     public static int getStatusBarHeight(Activity activity) {
         if (activity == null) {
             Log.e(TAG, "Null given activity.");
@@ -141,6 +167,10 @@ public class NavigationBarHelper {
     public static void prepareCascadeBackgroundForTranslucentNavBar(Activity activity, ViewGroup rootLayout, int desiredNavBarColor) {
         if (activity == null) {
             Log.e(TAG, "Null given activity.");
+            return;
+        }
+        if (rootLayout == null) {
+            Log.e(TAG, "Null given root layout.");
             return;
         }
         if (!hasNavBar(activity)) {

@@ -5,13 +5,16 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
-
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Author: Jerry
@@ -19,7 +22,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.0
+ * Version: 1.0.1
  * Description:
  */
 @SuppressWarnings("WeakerAccess")
@@ -29,6 +32,8 @@ public class StatusBarHelper {
      * The margin top of the top edge of the decor view by default, which equals to status bar height.
      */
     public static final int DEFAULT_NOTCH_MARGIN_TOP = 44;
+
+
     private static final String TAG = StatusBarHelper.class.getSimpleName();
 
     public static void setStatusBarBackgroundColor(Activity activity, int backgroundColor) {
@@ -41,7 +46,7 @@ public class StatusBarHelper {
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             activity.getWindow().setStatusBarColor(backgroundColor);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setTranslucentStatusBar(activity, true);
+            setTranslucentStatusBar(activity);
             SystemBarTintManager tintManager = new SystemBarTintManager(activity);
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setStatusBarTintColor(backgroundColor);
@@ -50,12 +55,13 @@ public class StatusBarHelper {
     }
 
     @SuppressLint("ObsoleteSdkInt")
-    public static void setTranslucentStatusBar(Activity activity, boolean fitViews) {
+    public static void setTranslucentStatusBar(Activity activity) {
         if (activity == null) {
             Log.e(TAG, "Null given activity.");
             return;
         }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            Log.e(TAG, "OS under KITKAT doesn't support transparent status bar.");
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -65,9 +71,6 @@ public class StatusBarHelper {
             activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         } else {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
-        if (fitViews) {
-            fitViews(activity);
         }
     }
 
@@ -100,12 +103,21 @@ public class StatusBarHelper {
         }
     }
 
-    public static boolean isLightColor(int color) {
-        double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
-        if (darkness < 0.5) {
-            return true; // It's a light color
-        } else {
-            return false; // It's a dark color
+    public static void toggleStatusBarTextColorForMIUI(Activity activity, boolean darkMode) {
+        if (activity == null) {
+            Log.e(TAG, "Null given activity.");
+            return;
+        }
+        Class<? extends Window> clazz = activity.getWindow().getClass();
+        try {
+            @SuppressLint("PrivateApi")
+            Class<?> layoutParams = Class.forName("android.view.MiuiWindowManager$LayoutParams");
+            Field field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE");
+            int darkModeFlag = field.getInt(layoutParams);
+            Method extraFlagField = clazz.getMethod("setExtraFlags", int.class, int.class);
+            extraFlagField.invoke(activity.getWindow(), darkMode ? darkModeFlag : 0, darkModeFlag);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
