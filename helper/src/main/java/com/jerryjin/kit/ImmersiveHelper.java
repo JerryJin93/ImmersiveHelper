@@ -100,10 +100,11 @@ public class ImmersiveHelper {
      * <br/>
      * However, if there is a view displays image or video on the top of the window, this method is not suitable.
      *
-     * @param activity        The Activity for optimization.
-     * @param hasNotch        The current device has notch or not.
-     * @param onNotchCallBack OnNotchCallBack.
-     * @param statusBarColor  The color of the status bar you want to set.
+     * @param activity           The Activity for optimization.
+     * @param hasNotch           The current device has notch or not.
+     * @param onNotchCallBack    OnNotchCallBack.
+     * @param statusBarColor     The color of the status bar you want to set.
+     * @param onOptimizeCallback OnOptimizeCallback.
      */
     public static void optimize(Activity activity, boolean hasNotch, OnNotchCallBack onNotchCallBack, int statusBarColor, OnOptimizeCallback onOptimizeCallback) {
         optimize(activity, hasNotch, NotchScreenType.TRANSLUCENT_STATUS_BAR_ONLY, onNotchCallBack, statusBarColor, onOptimizeCallback);
@@ -116,9 +117,10 @@ public class ImmersiveHelper {
      * <br/>
      * However, if there is a view displays image or video on the top of the window, this method is not suitable.
      *
-     * @param activity        The Activity for optimization.
-     * @param onNotchCallBack OnNotchCallBack.
-     * @param statusBarColor  The color of the status bar you want to set.
+     * @param activity           The Activity for optimization.
+     * @param onNotchCallBack    OnNotchCallBack.
+     * @param statusBarColor     The color of the status bar you want to set.
+     * @param onOptimizeCallback OnOptimizeCallback.
      */
     public static void optimize(Activity activity, OnNotchCallBack onNotchCallBack, int statusBarColor, OnOptimizeCallback onOptimizeCallback) {
         optimize(activity, hasNotch(activity), onNotchCallBack, statusBarColor, onOptimizeCallback);
@@ -167,10 +169,11 @@ public class ImmersiveHelper {
      * <br/>
      * However, if there is a view displays image or video on the top of the window, this method is not suitable.
      *
-     * @param activity        The Activity for optimization.
-     * @param type            The type of notch you want to apply for.
-     * @param onNotchCallBack OnNotchCallBack.
-     * @param statusBarColor  The color of the status bar you want to set.
+     * @param activity           The Activity for optimization.
+     * @param type               The type of notch you want to apply for.
+     * @param onNotchCallBack    OnNotchCallBack.
+     * @param statusBarColor     The color of the status bar you want to set.
+     * @param onOptimizeCallback OnOptimizeCallback.
      */
     public static void optimize(Activity activity, NotchScreenType type, OnNotchCallBack onNotchCallBack, int statusBarColor, OnOptimizeCallback onOptimizeCallback) {
         optimize(activity, hasNotch(activity), type, onNotchCallBack, statusBarColor, onOptimizeCallback);
@@ -179,11 +182,12 @@ public class ImmersiveHelper {
     /**
      * Optimization for screen with cutout or immersive status bar.
      *
-     * @param activity        The Activity for optimization.
-     * @param hasNotch        The current device has notch or not.
-     * @param type            The type of notch you want to apply for.
-     * @param onNotchCallBack OnNotchCallBack.
-     * @param darkMode        True if you want the color of text in status bar to be dark, false otherwise.
+     * @param activity           The Activity for optimization.
+     * @param hasNotch           The current device has notch or not.
+     * @param type               The type of notch you want to apply for.
+     * @param onNotchCallBack    OnNotchCallBack.
+     * @param darkMode           True if you want the color of text in status bar to be dark, false otherwise.
+     * @param onOptimizeCallback OnOptimizeCallback.
      */
     public static void optimize(Activity activity, boolean hasNotch, NotchScreenType type, OnNotchCallBack onNotchCallBack,
                                 boolean darkMode, OnOptimizeCallback onOptimizeCallback) {
@@ -210,10 +214,11 @@ public class ImmersiveHelper {
     /**
      * Optimization for screen with cutout or immersive status bar. And you should call this method in onAttachedWindow().
      *
-     * @param activity        The Activity for optimization.
-     * @param type            The type of notch you want to apply for.
-     * @param onNotchCallBack OnNotchCallBack.
-     * @param darkMode        True if you want the color of text in status bar to be dark, false otherwise.
+     * @param activity           The Activity for optimization.
+     * @param type               The type of notch you want to apply for.
+     * @param onNotchCallBack    OnNotchCallBack.
+     * @param darkMode           True if you want the color of text in status bar to be dark, false otherwise.
+     * @param onOptimizeCallback OnOptimizeCallback.
      */
     public static void optimize(Activity activity, NotchScreenType type, OnNotchCallBack onNotchCallBack,
                                 boolean darkMode, OnOptimizeCallback onOptimizeCallback) {
@@ -223,21 +228,25 @@ public class ImmersiveHelper {
     /**
      * Optimization for screen with cutout or immersive status bar. The navigation bar will not be translucent.
      *
-     * @param activity        The Activity for optimization.
-     * @param hasNotch        The current device has notch or not.
-     * @param onNotchCallBack OnNotchCallBack.
-     * @param darkMode        True if you want the color of text in status bar to be dark, false otherwise.
+     * @param activity           The Activity for optimization.
+     * @param hasNotch           The current device has notch or not.
+     * @param onNotchCallBack    OnNotchCallBack.
+     * @param darkMode           True if you want the color of text in status bar to be dark, false otherwise.
+     * @param onOptimizeCallback OnOptimizeCallback.
      */
     public static void optimize(Activity activity, boolean hasNotch, OnNotchCallBack onNotchCallBack, boolean darkMode, OnOptimizeCallback onOptimizeCallback) {
         optimize(activity, hasNotch, NotchScreenType.TRANSLUCENT_STATUS_BAR_ONLY, onNotchCallBack, darkMode, onOptimizeCallback);
     }
 
+    // Document annotations
+
     /**
      * Optimization for screen with cutout or immersive status bar. And you should call this method in onAttachedWindow().
      *
-     * @param activity        The Activity for optimization.
-     * @param onNotchCallBack OnNotchCallBack.
-     * @param darkMode        True if you want the color of text in status bar to be dark, false otherwise.
+     * @param activity           The Activity for optimization.
+     * @param onNotchCallBack    OnNotchCallBack.
+     * @param darkMode           True if you want the color of text in status bar to be dark, false otherwise.
+     * @param onOptimizeCallback OnOptimizeCallback.
      */
     public static void optimize(Activity activity, OnNotchCallBack onNotchCallBack, boolean darkMode, OnOptimizeCallback onOptimizeCallback) {
         optimize(activity, hasNotch(activity), onNotchCallBack, darkMode, onOptimizeCallback);
