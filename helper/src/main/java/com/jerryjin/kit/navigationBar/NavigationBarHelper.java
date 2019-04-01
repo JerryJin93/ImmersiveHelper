@@ -3,13 +3,16 @@ package com.jerryjin.kit.navigationBar;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -21,7 +24,7 @@ import java.lang.reflect.Method;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.1
+ * Version: 1.0.2
  * Description: A helper for navigation bar of Android.
  */
 @SuppressWarnings("WeakerAccess")
@@ -89,70 +92,41 @@ public class NavigationBarHelper {
         }
     }
 
+    /**
+     * 判断虚拟导航栏是否显示
+     *
+     * @return true(显示虚拟导航栏)，false(不显示或不支持虚拟导航栏)
+     */
     public static boolean isNavBarShow(Activity activity) {
-        if (null == activity) {
-            Log.e(TAG, "Null given activity.");
-            return false;
-        }
-        /*
-          获取应用区域高度
-         */
-        Rect outRect = new Rect();
-        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(outRect);
-        int activityHeight = outRect.height();
-        /*
-          获取状态栏高度
-         */
-        int statusBarHeight = getStatusBarHeight(activity);
-        /*
-          屏幕物理高度 减去 状态栏高度
-         */
-        int remainHeight = getRealHeight(activity) - statusBarHeight;
-        /*
-          剩余高度跟应用区域高度相等 说明导航栏没有显示 否则相反
-         */
-        return activityHeight != remainHeight;
-    }
-
-    public static boolean isNavBarShowForImmersive(Activity activity) {
-        if (null == activity) {
-            Log.e(TAG, "Null given activity.");
-            return false;
-        }
-        /*
-          获取应用区域高度
-         */
-        Rect outRect = new Rect();
-        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(outRect);
-        int activityHeight = outRect.height();
-        /*
-          屏幕物理高度 减去 状态栏高度
-         */
-        int remainHeight = getRealHeight(activity);
-        /*
-          剩余高度跟应用区域高度相等 说明导航栏没有显示 否则相反
-         */
-        return activityHeight != remainHeight;
-    }
-
-    public static int getStatusBarHeight(Activity activity) {
         if (activity == null) {
-            Log.e(TAG, "Null given activity.");
-            return ERR_CODE;
+            Log.e(TAG, "Method isNavBarShow(Activity activity) is invoked. Null given activity.");
+            return false;
         }
-        int result = 0;
-        int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = activity.getResources().getDimensionPixelSize(resourceId);
+        boolean show = false;
+        Point point = getRealSize(activity);
+        if (point != null) {
+            Window window = activity.getWindow();
+            View decorView = window.getDecorView();
+            Configuration conf = window.getContext().getResources().getConfiguration();
+            if (Configuration.ORIENTATION_LANDSCAPE == conf.orientation) {
+                View contentView = decorView.findViewById(android.R.id.content);
+                show = (point.x != contentView.getWidth());
+            } else {
+                Rect rect = new Rect();
+                decorView.getWindowVisibleDisplayFrame(rect);
+                Log.i(TAG, "visible height： " + rect.bottom + " real height: " + point.y);
+                Log.i(TAG, "navigation bar height： " + getNavBarHeight(activity));
+                show = (rect.bottom != point.y);
+            }
         }
-        return result;
+        return show;
     }
 
     @SuppressLint("ObsoleteSdkInt")
-    public static int getRealHeight(Activity activity) {
+    public static Point getRealSize(Activity activity) {
         if (null == activity) {
             Log.e(TAG, "Null given activity.");
-            return ERR_CODE;
+            return null;
         }
         WindowManager wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
         Point point = new Point();
@@ -161,25 +135,29 @@ public class NavigationBarHelper {
         } else {
             wm.getDefaultDisplay().getSize(point);
         }
-        return point.y;
+        return point;
     }
 
-    public static void prepareCascadeBackgroundForTranslucentNavBar(Activity activity, ViewGroup rootLayout, int desiredNavBarColor) {
+    /**
+     * Make a solid background for transparent navigation bar. Meanwhile, you can set the background color.
+     * <br/>
+     * It's only useful when the navigation bar is transparent and is shown. If the navigation bar is invisible, there won't be any change at all.
+     *
+     * @param activity           The given Activity.
+     * @param desiredNavBarColor The color of the background you want to set.
+     */
+    public static void prepareCascadeBackgroundForTranslucentNavBar(Activity activity, int desiredNavBarColor) {
         if (activity == null) {
             Log.e(TAG, "Null given activity.");
             return;
         }
-        if (rootLayout == null) {
-            Log.e(TAG, "Null given root layout.");
+        if (!hasNavBar(activity) || !isNavBarShow(activity)) {
             return;
         }
-        if (!hasNavBar(activity)) {
-            return;
-        }
-        if (isNavBarShow(activity)) {
-            activity.getWindow().getDecorView().setBackgroundColor(desiredNavBarColor);
-            FrameLayout.LayoutParams rootParams = (FrameLayout.LayoutParams) rootLayout.getLayoutParams();
-            rootParams.bottomMargin = getNavBarHeight(activity);
-        }
+        View decorView = activity.getWindow().getDecorView();
+        decorView.setBackgroundColor(desiredNavBarColor);
+        ViewGroup rootLayout = decorView.findViewById(android.R.id.content);
+        FrameLayout.LayoutParams rootParams = (FrameLayout.LayoutParams) rootLayout.getLayoutParams();
+        rootParams.bottomMargin = getNavBarHeight(activity);
     }
 }

@@ -9,6 +9,6 @@ package com.jerryjin.kit.statusBar;
  * Version: 1.0.0
  * Description:
  */
-public interface OnStatusBarOptimizeCallback {
-    void onOptimized(int navigationBarHeight);
+public interface OnOptimizeCallback {
+    void onOptimized(int statusBarHeight, boolean isNavBarShow, int navigationBarHeight);
 }
