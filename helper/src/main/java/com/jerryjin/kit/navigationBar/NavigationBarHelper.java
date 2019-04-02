@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.2
+ * Version: 1.0.3
  * Description: A helper for navigation bar of Android.
  */
 @SuppressWarnings("WeakerAccess")
@@ -93,9 +93,10 @@ public class NavigationBarHelper {
     }
 
     /**
-     * 判断虚拟导航栏是否显示
+     * Tell me whether the navigation bar is visible or not.
      *
-     * @return true(显示虚拟导航栏)，false(不显示或不支持虚拟导航栏)
+     * @param activity The given Activity.
+     * @return True if the navigation bar is visible, false otherwise.
      */
     public static boolean isNavBarShow(Activity activity) {
         if (activity == null) {

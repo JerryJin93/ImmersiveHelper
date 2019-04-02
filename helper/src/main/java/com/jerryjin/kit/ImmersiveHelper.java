@@ -24,7 +24,7 @@ import static com.jerryjin.kit.statusBar.StatusBarHelper.toggleStatusBarTextColo
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.1
+ * Version: 1.0.2
  * Description:
  */
 @SuppressWarnings("WeakerAccess")
@@ -113,7 +113,7 @@ public class ImmersiveHelper {
     /**
      * Optimization for screen with cutout or immersive status bar. The navigation bar will not be translucent.
      * <br/>
-     * And you should call this method in onAttachedWindow().
+     * And you have to call this method in onAttachedToWindow().
      * <br/>
      * However, if there is a view displays image or video on the top of the window, this method is not suitable.
      *
@@ -165,7 +165,7 @@ public class ImmersiveHelper {
     /**
      * Optimization for screen with cutout or immersive status bar.
      * <br/>
-     * And you should call this method in onAttachedWindow().
+     * And you have to call this method in onAttachedToWindow().
      * <br/>
      * However, if there is a view displays image or video on the top of the window, this method is not suitable.
      *
@@ -212,7 +212,7 @@ public class ImmersiveHelper {
     }
 
     /**
-     * Optimization for screen with cutout or immersive status bar. And you should call this method in onAttachedWindow().
+     * Optimization for screen with cutout or immersive status bar. And you have to call this method in onAttachedToWindow().
      *
      * @param activity           The Activity for optimization.
      * @param type               The type of notch you want to apply for.
@@ -241,7 +241,7 @@ public class ImmersiveHelper {
     // Document annotations
 
     /**
-     * Optimization for screen with cutout or immersive status bar. And you should call this method in onAttachedWindow().
+     * Optimization for screen with cutout or immersive status bar. And you have to call this method in onAttachedToWindow().
      *
      * @param activity           The Activity for optimization.
      * @param onNotchCallBack    OnNotchCallBack.
