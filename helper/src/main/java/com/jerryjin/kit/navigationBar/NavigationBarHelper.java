@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.3
+ * Version: 1.0.4
  * Description: A helper for navigation bar of Android.
  */
 @SuppressWarnings("WeakerAccess")
@@ -69,7 +69,7 @@ public class NavigationBarHelper {
     /**
      * Get the height of the navigation bar.
      *
-     * @param activity Current activity.
+     * @param activity Current Activity.
      * @return The height of the navigation bar.
      */
     public static int getNavBarHeight(Activity activity) {
@@ -94,6 +94,8 @@ public class NavigationBarHelper {
 
     /**
      * Tell me whether the navigation bar is visible or not.
+     * <br/>
+     * You'd better call it in onWindowFocusChanged(boolean hasFocus), or it may not work.
      *
      * @param activity The given Activity.
      * @return True if the navigation bar is visible, false otherwise.
@@ -115,14 +117,20 @@ public class NavigationBarHelper {
             } else {
                 Rect rect = new Rect();
                 decorView.getWindowVisibleDisplayFrame(rect);
-                Log.i(TAG, "visible height： " + rect.bottom + " real height: " + point.y);
-                Log.i(TAG, "navigation bar height： " + getNavBarHeight(activity));
+                Log.i(TAG, "Window visible display frame height： " + rect.bottom + "The real height of the screen: " + point.y);
+                Log.i(TAG, "Navigation bar height： " + getNavBarHeight(activity));
                 show = (rect.bottom != point.y);
             }
         }
         return show;
     }
 
+    /**
+     * Get the real size of the device screen.
+     *
+     * @param activity The given Activity.
+     * @return A Point object which contains the width and height of the screen.
+     */
     @SuppressLint("ObsoleteSdkInt")
     public static Point getRealSize(Activity activity) {
         if (null == activity) {
