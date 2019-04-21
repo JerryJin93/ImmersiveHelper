@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -24,7 +25,7 @@ import java.lang.reflect.Method;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.4
+ * Version: 1.0.5
  * Description: A helper for navigation bar of Android.
  */
 @SuppressWarnings("WeakerAccess")
@@ -117,12 +118,45 @@ public class NavigationBarHelper {
             } else {
                 Rect rect = new Rect();
                 decorView.getWindowVisibleDisplayFrame(rect);
-                Log.i(TAG, "Window visible display frame height： " + rect.bottom + "The real height of the screen: " + point.y);
+                Log.i(TAG, "Window visible display frame height： " + rect.bottom + ". The real height of the screen: " + point.y);
                 Log.i(TAG, "Navigation bar height： " + getNavBarHeight(activity));
                 show = (rect.bottom != point.y);
             }
         }
         return show;
+    }
+
+    /**
+     * Tell me whether the navigation bar is shown or not. This method is more effective than the other one.
+     * <br/>
+     * You'd better invoke current method in onWindowFocusChanged(boolean hasFocus), or it may not work.
+     *
+     * @param activity                           The given Activity.
+     * @param onNavigationBarStateChangeListener OnNavigationBarStateChangeListener.
+     */
+    public static void isNavBarShow(Activity activity, final OnNavigationBarStateChangeListener onNavigationBarStateChangeListener) {
+        if (activity == null) {
+            Log.e(TAG, "Method " +
+                    "isNavBarShow(Activity activity, OnNavigationBarStateChangeListener onNavigationBarStateChangeListener)" +
+                    " is invoked. Null given activity.");
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            final int navigationBarHeight = getNavBarHeight(activity);
+            activity.getWindow().getDecorView().setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @Override
+                public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                    if (insets != null) {
+                        int bottom = insets.getSystemWindowInsetBottom();
+                        boolean isShowing = bottom == navigationBarHeight;
+                        if (bottom <= navigationBarHeight && onNavigationBarStateChangeListener != null) {
+                            onNavigationBarStateChangeListener.onNavigationBarStateChanged(isShowing, navigationBarHeight);
+                        }
+                    }
+                    return insets;
+                }
+            });
+        }
     }
 
     /**

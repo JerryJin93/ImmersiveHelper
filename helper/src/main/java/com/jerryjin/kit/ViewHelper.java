@@ -10,7 +10,7 @@ import android.view.View;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.1
+ * Version: 1.0.2
  * Description:
  */
 @SuppressWarnings("WeakerAccess")
@@ -47,11 +47,21 @@ public class ViewHelper {
 
     public static void clearUiOption(Activity activity, int visibility) {
         if (activity == null) {
-            Log.e(TAG, "Null given activity.");
+            Log.e(TAG, "Method clearUiOption(Activity activity, int visibility) is invoked. Null given activity.");
             return;
         }
         View decorView = activity.getWindow().getDecorView();
         int originVisibility = decorView.getSystemUiVisibility();
         decorView.setSystemUiVisibility(originVisibility & ~visibility);
+    }
+
+    public static void clearUiOptions(Activity activity, int... visibilities) {
+        if (activity == null) {
+            Log.e(TAG, "Method clearUiOptions(Activity activity, int... visibilities) is invoked. Null given activity.");
+            return;
+        }
+        for (int visibility : visibilities) {
+            clearUiOption(activity, visibility);
+        }
     }
 }

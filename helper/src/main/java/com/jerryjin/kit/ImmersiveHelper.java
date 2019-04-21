@@ -24,13 +24,17 @@ import static com.jerryjin.kit.statusBar.StatusBarHelper.toggleStatusBarTextColo
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.2
+ * Version: 1.0.3
  * Description:
  */
 @SuppressWarnings("WeakerAccess")
 public class ImmersiveHelper {
 
     private static final String TAG = ImmersiveHelper.class.getSimpleName();
+
+    public static final int TYPE_IMAGE_ON_TOP = 0;
+
+    public static final int TYPE_NAVIGATION_LAYOUT_ON_TOP = 1;
 
     private ImmersiveHelper() {
     }
