@@ -18,6 +18,6 @@ A convenient tool for immersive experience on Android devices.
 
 ```
 	dependencies {
-	        implementation 'com.github.JerryJin93:ImmersiveHelper:1.0.4'
+	        implementation 'com.github.JerryJin93:ImmersiveHelper:1.0.5'
 	}
 ```

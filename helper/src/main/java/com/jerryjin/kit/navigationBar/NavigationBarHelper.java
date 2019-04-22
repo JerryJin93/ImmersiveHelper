@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.5
+ * Version: 1.0.6
  * Description: A helper for navigation bar of Android.
  */
 @SuppressWarnings("WeakerAccess")
@@ -148,6 +148,9 @@ public class NavigationBarHelper {
                 public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
                     if (insets != null) {
                         int bottom = insets.getSystemWindowInsetBottom();
+                        Log.i(TAG, "SystemWindowInsetLeft: " + insets.getSystemWindowInsetLeft()
+                                + ". SystemWindowInsetTop: " + insets.getSystemWindowInsetTop() + ". SystemWindowInsetRight: "
+                                + insets.getSystemWindowInsetRight() + ". SystemWindowInsetBottom: " + insets.getSystemWindowInsetBottom());
                         boolean isShowing = bottom == navigationBarHeight;
                         if (bottom <= navigationBarHeight && onNavigationBarStateChangeListener != null) {
                             onNavigationBarStateChangeListener.onNavigationBarStateChanged(isShowing, navigationBarHeight);
