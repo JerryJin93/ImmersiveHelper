@@ -1,0 +1,22 @@
+package com.jerryjin.kit.interfaces;
+
+import android.app.Activity;
+
+import com.jerryjin.kit.bean.NotchInfo;
+
+/**
+ * Author: Jerry
+ * Generated at: 2020/7/26 20:51
+ * GitHub: https://github.com/JerryJin93
+ * Blog:
+ * WeChat: enGrave93
+ * Version: 2.0.0
+ * Description:
+ */
+public interface INotch {
+    void applyNotch(Activity activity, boolean enable);
+
+    boolean hasNotch(Activity activity);
+
+    NotchInfo obtainNotch(Activity activity);
+}

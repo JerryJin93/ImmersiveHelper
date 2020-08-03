@@ -1,4 +1,4 @@
-package com.jerryjin.kit.statusBar;
+package com.jerryjin.kit.utils.statusBar;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;

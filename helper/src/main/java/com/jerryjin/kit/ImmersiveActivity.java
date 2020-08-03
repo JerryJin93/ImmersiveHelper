@@ -1,16 +1,12 @@
 package com.jerryjin.kit;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 
-import com.jerryjin.kit.navigationBar.NavigationBarHelper;
-import com.jerryjin.kit.statusBar.OnOptimizeCallback;
-import com.wcl.notchfit.args.NotchProperty;
-import com.wcl.notchfit.core.OnNotchCallBack;
-
-import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.jerryjin.kit.interfaces.OnOptimizeCallback;
 
 /**
  * Author: Jerry
@@ -18,75 +14,40 @@ import androidx.appcompat.app.AppCompatActivity;
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version:
+ * Version: 2.0.0
  * Description:
  */
 public abstract class ImmersiveActivity extends AppCompatActivity {
 
-    protected int navBarHeight;
+    protected ImmersiveHelper helper = new ImmersiveHelper(this);
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        setContentView(getLayoutId());
-    }
-
-    @LayoutRes
-    protected abstract int getLayoutId();
-
-    @Override
-    public void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        navBarHeight = NavigationBarHelper.getNavBarHeight(this);
-        if (getImmersiveType() == ImmersiveHelper.TYPE_IMAGE_ON_TOP) {
-            ImmersiveHelper.optimize(this, new OnNotchCallBack() {
-                @Override
-                public void onNotchReady(NotchProperty notchProperty) {
-                    if (notchProperty.isNotchEnable()) {
-                        resolveNotch();
-                    }
-                }
-            }, isStatusBarInDarkMode(), new OnOptimizeCallback() {
-                @Override
-                public void onOptimized(int statusBarHeight, boolean isNavBarShow, int navigationBarHeight) {
-                    // TODO: 2019/4/10  
-                }
-            });
-        } else {
-            ImmersiveHelper.optimize(this, new OnNotchCallBack() {
-                @Override
-                public void onNotchReady(NotchProperty notchProperty) {
-                    if (notchProperty.isNotchEnable()) {
-                        resolveNotch();
-                    }
-                }
-            }, getTopLayoutColor(), new OnOptimizeCallback() {
-                @Override
-                public void onOptimized(int statusBarHeight, boolean isNavBarShow, int navigationBarHeight) {
-                    // TODO: 2019/4/10  
-                }
-            });
-        }
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        helper.setCallback(getOptimizationCallback())
+                .setStatusBarMode(isStatusBarTextLight())
+                .setOptimizationType(getOptimizationType())
+                .optimize();
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (NavigationBarHelper.isNavBarShow(this) && ImmersiveHelper.hasNotch(this)) {
-            resolveBottomInNotchMode();
-        }
+        helper.notifyWindowFocusChanged(hasFocus);
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        helper.notifyConfigurationChanged(newConfig);
+    }
 
-    @ImmersiveType
-    protected abstract int getImmersiveType();
+    protected abstract OnOptimizeCallback getOptimizationCallback();
 
-    protected abstract int getTopLayoutColor();
+    protected OptimizationType getOptimizationType() {
+        return OptimizationType.TYPE_IMMERSIVE;
+    }
 
-    protected abstract boolean isStatusBarInDarkMode();
-
-    protected abstract void resolveNotch();
-
-    protected abstract void resolveBottomInNotchMode();
+    protected abstract boolean isStatusBarTextLight();
 
 }

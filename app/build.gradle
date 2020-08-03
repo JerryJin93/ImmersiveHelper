@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.jerryjin.immersivehelper"
-        minSdkVersion 19
+        minSdkVersion 26
         targetSdkVersion 28
         versionCode 2
         versionName "1.0.1"
@@ -16,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -26,4 +31,9 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.2-alpha02'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha02'
     implementation project(':helper')
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }

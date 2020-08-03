@@ -1,9 +1,11 @@
-package com.jerryjin.kit;
+package com.jerryjin.kit.utils;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 
+import com.jerryjin.kit.utils.log.Logger;
+
+import static com.jerryjin.kit.utils.log.Logger.ERR_NULL_ACTIVITY;
 /**
  * Author: Jerry
  * Generated at: 2019/4/1 10:46 PM
@@ -33,6 +35,19 @@ public class ViewHelper {
         decorView.setSystemUiVisibility(uiOptions | setUiOptions);
     }
 
+    public static void addUiOption(Activity activity, int option) {
+        if (activity == null) {
+            return;
+        }
+        if (option == 0) {
+            Logger.i(TAG, "addUiOption");
+            return;
+        }
+        View decorView = activity.getWindow().getDecorView();
+        int previousSystemUiVisibility = decorView.getSystemUiVisibility();
+        decorView.setSystemUiVisibility(previousSystemUiVisibility | option);
+    }
+
     public static void setUiOptions(Activity activity, int... visibilities) {
         if (activity == null || visibilities == null || visibilities.length == 0) {
             return;
@@ -47,7 +62,7 @@ public class ViewHelper {
 
     public static void clearUiOption(Activity activity, int visibility) {
         if (activity == null) {
-            Log.e(TAG, "Method clearUiOption(Activity activity, int visibility) is invoked. Null given activity.");
+            Logger.e(TAG, "clearUiOption", ERR_NULL_ACTIVITY);
             return;
         }
         View decorView = activity.getWindow().getDecorView();
@@ -57,7 +72,7 @@ public class ViewHelper {
 
     public static void clearUiOptions(Activity activity, int... visibilities) {
         if (activity == null) {
-            Log.e(TAG, "Method clearUiOptions(Activity activity, int... visibilities) is invoked. Null given activity.");
+            Logger.e(TAG, "clearUiOption", ERR_NULL_ACTIVITY);
             return;
         }
         for (int visibility : visibilities) {

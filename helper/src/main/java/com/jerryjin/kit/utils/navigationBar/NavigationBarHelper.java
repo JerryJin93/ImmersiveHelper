@@ -1,4 +1,4 @@
-package com.jerryjin.kit.navigationBar;
+package com.jerryjin.kit.utils.navigationBar;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -16,6 +16,10 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import com.jerryjin.kit.utils.Utils;
+import com.jerryjin.kit.utils.log.Logger;
+import com.jerryjin.kit.interfaces.OnNavigationBarStateChangeListener;
 
 import java.lang.reflect.Method;
 
@@ -43,7 +47,6 @@ public class NavigationBarHelper {
     private NavigationBarHelper() {
     }
 
-    @SuppressWarnings("unchecked")
     @SuppressLint("PrivateApi")
     public static boolean hasNavBar(Context context) {
         boolean hasNavigationBar = false;
@@ -53,7 +56,7 @@ public class NavigationBarHelper {
             hasNavigationBar = resources.getBoolean(id);
         }
         try {
-            Class systemPropertiesClass = Class.forName("android.os.SystemProperties");
+            Class<?> systemPropertiesClass = Class.forName("android.os.SystemProperties");
             Method m = systemPropertiesClass.getMethod("get", String.class);
             String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
             if ("1".equals(navBarOverride)) {
@@ -83,6 +86,7 @@ public class NavigationBarHelper {
         return resources.getDimensionPixelSize(resourceId);
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     public static void setNavBarColor(Activity activity, int color) {
         if (activity == null) {
             Log.e(TAG, "Null given activity.");
@@ -134,6 +138,7 @@ public class NavigationBarHelper {
      * @param activity                           The given Activity.
      * @param onNavigationBarStateChangeListener OnNavigationBarStateChangeListener.
      */
+    @SuppressLint("ObsoleteSdkInt")
     public static void isNavBarShow(Activity activity, final OnNavigationBarStateChangeListener onNavigationBarStateChangeListener) {
         if (activity == null) {
             Log.e(TAG, "Method " +
@@ -170,11 +175,17 @@ public class NavigationBarHelper {
      */
     @SuppressLint("ObsoleteSdkInt")
     public static Point getRealSize(Activity activity) {
+        final String methodName = "getRealSize";
         if (null == activity) {
-            Log.e(TAG, "Null given activity.");
+            Logger.e(TAG, methodName, "activity", "Null given activity.");
             return null;
         }
+        final String param = activity.toString();
         WindowManager wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
+        if (wm == null) {
+            Logger.e(TAG, methodName, Utils.format("Activity %s", param), "Null WindowManager retrieved.");
+            return null;
+        }
         Point point = new Point();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             wm.getDefaultDisplay().getRealSize(point);

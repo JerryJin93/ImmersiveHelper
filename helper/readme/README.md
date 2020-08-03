@@ -1,6 +1,8 @@
 # ImmersiveHelper
 A convenient tool for immersive experience on Android devices.
 
+[中文版文档](README_CHN.md)
+
 ## How to use
 
 ### Step 1: Add it in your root build.gradle at the end of repositories.

@@ -1,4 +1,4 @@
-package com.jerryjin.kit;
+package com.jerryjin.kit.utils;
 
 import android.graphics.Bitmap;
 

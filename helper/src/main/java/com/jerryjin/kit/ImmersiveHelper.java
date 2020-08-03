@@ -1,22 +1,30 @@
 package com.jerryjin.kit;
 
 import android.app.Activity;
-import android.util.Log;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.view.Window;
 
-import com.jerryjin.kit.navigationBar.NavigationBarHelper;
-import com.jerryjin.kit.statusBar.OnOptimizeCallback;
-import com.jerryjin.kit.statusBar.StatusBarHelper;
-import com.wcl.notchfit.NotchFit;
-import com.wcl.notchfit.args.NotchScreenType;
-import com.wcl.notchfit.core.OnNotchCallBack;
+import androidx.appcompat.app.AppCompatActivity;
 
-import androidx.annotation.Size;
+import com.jerryjin.kit.bean.DecorationInfo;
+import com.jerryjin.kit.bean.NotchInfo;
+import com.jerryjin.kit.interfaces.OnOptimizeCallback;
+import com.jerryjin.kit.lifecycle.ImmersiveLifecycle;
+import com.jerryjin.kit.lifecycle.ImmersiveLifecycleObserver;
+import com.jerryjin.kit.manufacturer.Manufacturer;
+import com.jerryjin.kit.notch.NotchFactory;
+import com.jerryjin.kit.notch.NotchHelper;
+import com.jerryjin.kit.utils.ActivityUIHelper;
+import com.jerryjin.kit.utils.Utils;
+import com.jerryjin.kit.utils.log.Logger;
+import com.jerryjin.kit.utils.navigationBar.NavigationBarHelper;
+import com.jerryjin.kit.utils.statusBar.StatusBarHelper;
 
-import static com.jerryjin.kit.ColorHelper.isLightColor;
-import static com.jerryjin.kit.statusBar.StatusBarHelper.setStatusBarBackgroundColor;
-import static com.jerryjin.kit.statusBar.StatusBarHelper.setTranslucentStatusBar;
-import static com.jerryjin.kit.statusBar.StatusBarHelper.toggleStatusBarTextColor;
-import static com.jerryjin.kit.statusBar.StatusBarHelper.toggleStatusBarTextColorForMIUI;
+import static com.jerryjin.kit.utils.log.Logger.ERR_NULL_ACTIVITY;
+import static com.jerryjin.kit.utils.statusBar.StatusBarHelper.setTranslucentStatusBar;
+import static com.jerryjin.kit.utils.statusBar.StatusBarHelper.toggleStatusBarTextColor;
+import static com.jerryjin.kit.utils.statusBar.StatusBarHelper.toggleStatusBarTextColorForMIUI;
 
 /**
  * Author: Jerry
@@ -24,238 +32,189 @@ import static com.jerryjin.kit.statusBar.StatusBarHelper.toggleStatusBarTextColo
  * GitHub: https://github.com/JerryJin93
  * Blog:
  * WeChat: enGrave93
- * Version: 1.0.3
+ * Version: 2.0.0
  * Description:
  */
 @SuppressWarnings("WeakerAccess")
-public class ImmersiveHelper {
+public class ImmersiveHelper implements ImmersiveLifecycle {
 
     private static final String TAG = ImmersiveHelper.class.getSimpleName();
 
-    public static final int TYPE_IMAGE_ON_TOP = 0;
+    private Activity activity;
+    private boolean hasOptimized;
+    private DecorationInfo decorationInfo;
+    private boolean isStatusBarTextDark;
+    private OnOptimizeCallback onOptimizeCallback;
+    private OptimizationType optimizationType = OptimizationType.TYPE_IMMERSIVE;
 
-    public static final int TYPE_NAVIGATION_LAYOUT_ON_TOP = 1;
+    private int previousStatusBarColor;
+    private int previousNavigationBarColor;
 
-    private ImmersiveHelper() {
+    public ImmersiveHelper(Activity activity) {
+        this.activity = activity;
+        saveDecorationColor();
+        if (activity instanceof AppCompatActivity) {
+            ((AppCompatActivity) activity).getLifecycle().addObserver(new ImmersiveLifecycleObserver(this));
+        }
     }
 
-    public static boolean hasNotch(Activity activity) {
-        return NotchFit.hasNotch(activity);
+    private void saveDecorationColor() {
+        Window window = activity.getWindow();
+        this.previousStatusBarColor = window.getStatusBarColor();
+        this.previousNavigationBarColor = window.getNavigationBarColor();
     }
 
     /**
-     * Optimization for screen with cutout or immersive status bar, must be called in onAttachedToWindow.
+     * Set the status of the {@link Logger}.
      *
-     * @param activity        The current Activity.
-     * @param callBack        OnNotchCallBack.
-     * @param accordanceColor The status bar color you want it to be.
-     * @param navBarHeight    The height of the Navigation Bar, you should only pass an int array of 1 element.
+     * @param enable True if to enable, false otherwise.
      */
-    @Deprecated
-    public static void optimize(Activity activity, OnNotchCallBack callBack, int accordanceColor, @Size(1) int[] navBarHeight) {
-        if (activity == null) {
-            Log.e(TAG, "Null given activity.");
-            return;
-        }
-        if (navBarHeight == null) {
-            Log.e(TAG, "Null given int array, creating a new one...");
-            navBarHeight = new int[1];
-        }
-        navBarHeight[0] = NavigationBarHelper.hasNavBar(activity) ? NavigationBarHelper.getNavBarHeight(activity) : NavigationBarHelper.ERR_CODE;
-        if (hasNotch(activity)) {
-            Log.i(TAG, "The current device has a cutout or notch, let's fit it.");
-            NotchFit.fit(activity, NotchScreenType.TRANSLUCENT, callBack);
-        } else {
-            Log.i(TAG, "The current device doesn't has a cutout or notch. We're going to have a immersive experience.");
-            setStatusBarBackgroundColor(activity, accordanceColor);
-            toggleStatusBarTextColor(activity, isLightColor(accordanceColor));
+    public static void setLoggerStatus(boolean enable) {
+        Logger.setLoggable(enable);
+    }
+
+
+    public ImmersiveHelper setCallback(OnOptimizeCallback onOptimizeCallback) {
+        this.onOptimizeCallback = onOptimizeCallback;
+        return this;
+    }
+
+    public ImmersiveHelper setStatusBarMode(boolean darkMode) {
+        this.isStatusBarTextDark = darkMode;
+        return this;
+    }
+
+    public ImmersiveHelper setOptimizationType(OptimizationType optimizationType) {
+        this.optimizationType = optimizationType;
+        return this;
+    }
+
+    public void optimize() {
+        if (optimizationType == OptimizationType.TYPE_IMMERSIVE) {
+            optimizeImmersive();
+        } else if (optimizationType == OptimizationType.TYPE_FULLSCREEN) {
+            optimizeFullScreen();
         }
     }
 
-    @Deprecated
-    public static void optimize(Activity activity, OnNotchCallBack onNotchCallBack, boolean fitViews,
-                                OnOptimizeCallback onOptimizeCallback, @Size(1) int[] navBarHeight) {
+    private void optimizeImmersive() {
+        NotchHelper.probeNotch(activity, hasNotch -> {
+            NotchInfo notchInfo;
+            if (hasNotch) {
+                notchInfo = NotchHelper.optimize(activity);
+            } else {
+                notchInfo = null;
+                setTranslucentStatusBar(activity);
+            }
+            hasOptimized = true;
+            toggleStatusBarTextColor(activity, isStatusBarTextDark);
+            if (Utils.getManufacturer().toLowerCase().equals(Manufacturer.MI)) {
+                toggleStatusBarTextColorForMIUI(activity, isStatusBarTextDark);
+            }
+            if (onOptimizeCallback != null) {
+                decorationInfo = new DecorationInfo.Builder()
+                        .setOrientation(activity.getResources().getConfiguration().orientation)
+                        .setNotchInfo(notchInfo)
+                        .setStatusBarHeight(StatusBarHelper.getStatusBarHeight(activity))
+                        .setNavigationBarHeight(NavigationBarHelper.getNavBarHeight(activity))
+                        .build();
+                onOptimizeCallback.onOptimized(decorationInfo);
+            }
+        });
+    }
+
+
+    private void optimizeFullScreen() {
+        ActivityUIHelper.fullScreen(activity);
+        hasOptimized = true;
         if (activity == null) {
-            Log.e(TAG, "Null given activity.");
+            Logger.e(TAG, "optimizeFullScreen", ERR_NULL_ACTIVITY);
             return;
         }
-        if (navBarHeight == null) {
-            Log.e(TAG, "Null given int array, creating a new one...");
-            navBarHeight = new int[1];
+        if (onOptimizeCallback != null) {
+            activity.getWindow().getDecorView().post(() -> {
+                decorationInfo = new DecorationInfo.Builder()
+                        .setOrientation(activity.getResources().getConfiguration().orientation)
+                        .setNotchInfo(NotchFactory.getNotch().obtainNotch(activity))
+                        .setStatusBarHeight(StatusBarHelper.getStatusBarHeight(activity))
+                        .setNavigationBarHeight(NavigationBarHelper.getNavBarHeight(activity))
+                        .build();
+                onOptimizeCallback.onOptimized(decorationInfo);
+            });
         }
-        int statusBarHeight = StatusBarHelper.getStatusBarHeight(activity);
-        boolean isNavBarShow = NavigationBarHelper.isNavBarShow(activity);
-        navBarHeight[0] = NavigationBarHelper.hasNavBar(activity) ? NavigationBarHelper.getNavBarHeight(activity) : NavigationBarHelper.ERR_CODE;
-        if (hasNotch(activity)) {
-            Log.i(TAG, "The current device has a cutout or notch, let's fit it.");
-            NotchFit.fit(activity, NotchScreenType.TRANSLUCENT, onNotchCallBack);
-        } else {
-            Log.i(TAG, "The current device doesn't has a cutout or notch. We're going to have a immersive experience.");
-            setTranslucentStatusBar(activity);
-            toggleStatusBarTextColor(activity, true);
+    }
+
+    public void undoOptimization() {
+        if (optimizationType == OptimizationType.TYPE_IMMERSIVE) {
+            undoOptimizationForImmersive();
+        } else if (optimizationType == OptimizationType.TYPE_FULLSCREEN) {
+            undoOptimizationForFullScreen();
+        }
+    }
+
+    private void undoOptimizationForImmersive() {
+        hasOptimized = NotchHelper.undoOptimization(activity, previousStatusBarColor, previousNavigationBarColor);
+        if (onOptimizeCallback != null) {
+            if (decorationInfo == null) {
+                throw new IllegalStateException("You cannot undo optimization for immersive after disposing.");
+            }
+            NotchInfo notchInfo = decorationInfo.getNotchInfo();
+            if (notchInfo != null) {
+                notchInfo.reset();
+            }
+            onOptimizeCallback.onOptimized(decorationInfo);
+        }
+    }
+
+    private void undoOptimizationForFullScreen() {
+        if (ActivityUIHelper.isFullScreen(activity)) {
+            ActivityUIHelper.undoOptimizationForFullScreen(activity);
+            hasOptimized = false;
             if (onOptimizeCallback != null) {
-                onOptimizeCallback.onOptimized(statusBarHeight, isNavBarShow, navBarHeight[0]);
+                if (decorationInfo == null) {
+                    throw new IllegalStateException("You cannot undo optimization for fullscreen after disposing.");
+                }
+                if (decorationInfo.hasNotch()) {
+                    decorationInfo.resetNotchInfo();
+                }
+                onOptimizeCallback.onOptimized(decorationInfo);
             }
         }
     }
 
-    /**
-     * Optimization for screen with cutout or immersive status bar. The navigation bar will not be translucent.
-     * <br/>
-     * However, if there is a view displays image or video on the top of the window, this method is not suitable.
-     *
-     * @param activity           The Activity for optimization.
-     * @param hasNotch           The current device has notch or not.
-     * @param onNotchCallBack    OnNotchCallBack.
-     * @param statusBarColor     The color of the status bar you want to set.
-     * @param onOptimizeCallback OnOptimizeCallback.
-     */
-    public static void optimize(Activity activity, boolean hasNotch, OnNotchCallBack onNotchCallBack, int statusBarColor, OnOptimizeCallback onOptimizeCallback) {
-        optimize(activity, hasNotch, NotchScreenType.TRANSLUCENT_STATUS_BAR_ONLY, onNotchCallBack, statusBarColor, onOptimizeCallback);
-    }
-
-    /**
-     * Optimization for screen with cutout or immersive status bar. The navigation bar will not be translucent.
-     * <br/>
-     * And you have to call this method in onAttachedToWindow().
-     * <br/>
-     * However, if there is a view displays image or video on the top of the window, this method is not suitable.
-     *
-     * @param activity           The Activity for optimization.
-     * @param onNotchCallBack    OnNotchCallBack.
-     * @param statusBarColor     The color of the status bar you want to set.
-     * @param onOptimizeCallback OnOptimizeCallback.
-     */
-    public static void optimize(Activity activity, OnNotchCallBack onNotchCallBack, int statusBarColor, OnOptimizeCallback onOptimizeCallback) {
-        optimize(activity, hasNotch(activity), onNotchCallBack, statusBarColor, onOptimizeCallback);
-    }
-
-
-    /**
-     * Optimization for screen with cutout or immersive status bar.
-     * <br/>
-     * However, if there is a view displays image or video on the top of the window, this method is not suitable.
-     *
-     * @param activity           The Activity for optimization.
-     * @param hasNotch           The current device has notch or not.
-     * @param type               The type of notch you want to apply for.
-     * @param onNotchCallBack    OnNotchCallBack.
-     * @param statusBarColor     The color of the status bar you want to set.
-     * @param onOptimizeCallback OnOptimizeCallback.
-     */
-    public static void optimize(Activity activity, boolean hasNotch, NotchScreenType type, OnNotchCallBack onNotchCallBack, int statusBarColor, OnOptimizeCallback onOptimizeCallback) {
-        if (activity == null) {
-            Log.e(TAG, "Null given activity.");
-            return;
+    public void notifyConfigurationChanged(Configuration config) {
+        if (decorationInfo == null) {
+            throw new IllegalStateException("You cannot call notifyConfigurationChanged after disposing.");
         }
-        boolean darkMode = isLightColor(statusBarColor);
-        int statusBarHeight = StatusBarHelper.getStatusBarHeight(activity);
-        boolean isNavBarShow = NavigationBarHelper.isNavBarShow(activity);
-        int navBarHeight = NavigationBarHelper.getNavBarHeight(activity);
-
-        if (hasNotch) {
-            Log.i(TAG, "The current device has a cutout or notch, let's fit it.");
-            NotchFit.fit(activity, type, onNotchCallBack);
-        } else {
-            setStatusBarBackgroundColor(activity, statusBarColor);
-        }
-        toggleStatusBarTextColor(activity, darkMode);
-        toggleStatusBarTextColorForMIUI(activity, darkMode);
+        if (!hasOptimized)
+            optimize();
+        decorationInfo.setOrientation(config.orientation);
         if (onOptimizeCallback != null) {
-            onOptimizeCallback.onOptimized(statusBarHeight, isNavBarShow, navBarHeight);
+            onOptimizeCallback.onOptimized(decorationInfo);
         }
     }
 
-    /**
-     * Optimization for screen with cutout or immersive status bar.
-     * <br/>
-     * And you have to call this method in onAttachedToWindow().
-     * <br/>
-     * However, if there is a view displays image or video on the top of the window, this method is not suitable.
-     *
-     * @param activity           The Activity for optimization.
-     * @param type               The type of notch you want to apply for.
-     * @param onNotchCallBack    OnNotchCallBack.
-     * @param statusBarColor     The color of the status bar you want to set.
-     * @param onOptimizeCallback OnOptimizeCallback.
-     */
-    public static void optimize(Activity activity, NotchScreenType type, OnNotchCallBack onNotchCallBack, int statusBarColor, OnOptimizeCallback onOptimizeCallback) {
-        optimize(activity, hasNotch(activity), type, onNotchCallBack, statusBarColor, onOptimizeCallback);
-    }
-
-    /**
-     * Optimization for screen with cutout or immersive status bar.
-     *
-     * @param activity           The Activity for optimization.
-     * @param hasNotch           The current device has notch or not.
-     * @param type               The type of notch you want to apply for.
-     * @param onNotchCallBack    OnNotchCallBack.
-     * @param darkMode           True if you want the color of text in status bar to be dark, false otherwise.
-     * @param onOptimizeCallback OnOptimizeCallback.
-     */
-    public static void optimize(Activity activity, boolean hasNotch, NotchScreenType type, OnNotchCallBack onNotchCallBack,
-                                boolean darkMode, OnOptimizeCallback onOptimizeCallback) {
-        if (activity == null) {
-            Log.e(TAG, "Null given activity.");
-            return;
+    public void notifyWindowFocusChanged(boolean hasFocus) {
+        if (decorationInfo == null) {
+            throw new IllegalStateException("You cannot call notifyWindowFocusChanged after disposing.");
         }
-        int statusBarHeight = StatusBarHelper.getStatusBarHeight(activity);
-        boolean isNavBarShow = NavigationBarHelper.isNavBarShow(activity);
-        int navBarHeight = NavigationBarHelper.getNavBarHeight(activity);
-        if (hasNotch) {
-            Log.i(TAG, "The current device has a cutout or notch, let's fit it.");
-            NotchFit.fit(activity, type, onNotchCallBack);
-        } else {
-            setTranslucentStatusBar(activity);
-        }
-        toggleStatusBarTextColor(activity, darkMode);
-        toggleStatusBarTextColorForMIUI(activity, darkMode);
-        if (onOptimizeCallback != null) {
-            onOptimizeCallback.onOptimized(statusBarHeight, isNavBarShow, navBarHeight);
+        if (ActivityUIHelper.needOptimizeNavigationBar(activity) && onOptimizeCallback != null) {
+            onOptimizeCallback.onOptimized(decorationInfo, hasFocus);
         }
     }
 
-    /**
-     * Optimization for screen with cutout or immersive status bar. And you have to call this method in onAttachedToWindow().
-     *
-     * @param activity           The Activity for optimization.
-     * @param type               The type of notch you want to apply for.
-     * @param onNotchCallBack    OnNotchCallBack.
-     * @param darkMode           True if you want the color of text in status bar to be dark, false otherwise.
-     * @param onOptimizeCallback OnOptimizeCallback.
-     */
-    public static void optimize(Activity activity, NotchScreenType type, OnNotchCallBack onNotchCallBack,
-                                boolean darkMode, OnOptimizeCallback onOptimizeCallback) {
-        optimize(activity, hasNotch(activity), type, onNotchCallBack, darkMode, onOptimizeCallback);
+    @Override
+    public void dispose() {
+        initState();
     }
 
-    /**
-     * Optimization for screen with cutout or immersive status bar. The navigation bar will not be translucent.
-     *
-     * @param activity           The Activity for optimization.
-     * @param hasNotch           The current device has notch or not.
-     * @param onNotchCallBack    OnNotchCallBack.
-     * @param darkMode           True if you want the color of text in status bar to be dark, false otherwise.
-     * @param onOptimizeCallback OnOptimizeCallback.
-     */
-    public static void optimize(Activity activity, boolean hasNotch, OnNotchCallBack onNotchCallBack, boolean darkMode, OnOptimizeCallback onOptimizeCallback) {
-        optimize(activity, hasNotch, NotchScreenType.TRANSLUCENT_STATUS_BAR_ONLY, onNotchCallBack, darkMode, onOptimizeCallback);
+    private void initState() {
+        activity = null;
+        hasOptimized = false;
+        decorationInfo = null;
+        isStatusBarTextDark = false;
+        optimizationType = OptimizationType.TYPE_IMMERSIVE;
+        onOptimizeCallback = null;
+        this.previousStatusBarColor = Color.TRANSPARENT;
     }
-
-    // Document annotations
-
-    /**
-     * Optimization for screen with cutout or immersive status bar. And you have to call this method in onAttachedToWindow().
-     *
-     * @param activity           The Activity for optimization.
-     * @param onNotchCallBack    OnNotchCallBack.
-     * @param darkMode           True if you want the color of text in status bar to be dark, false otherwise.
-     * @param onOptimizeCallback OnOptimizeCallback.
-     */
-    public static void optimize(Activity activity, OnNotchCallBack onNotchCallBack, boolean darkMode, OnOptimizeCallback onOptimizeCallback) {
-        optimize(activity, hasNotch(activity), onNotchCallBack, darkMode, onOptimizeCallback);
-    }
-
-    // TODO: 2019/3/31 cascade method
-
 }

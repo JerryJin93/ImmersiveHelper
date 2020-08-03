@@ -1,18 +1,17 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.JerryJin93'
 
 android {
-    compileSdkVersion 28
-
-
+    compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 5
-        versionName "1.0.5"
+        minSdkVersion 26
+        targetSdkVersion 29
+        versionCode 6
+        versionName "2.0.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -25,6 +24,10 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -36,4 +39,14 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "com.github.JerryJin93:NotchFit:$rootProject.ext.notchFitVersion"
     implementation "com.readystatesoftware.systembartint:systembartint:$rootProject.ext.systemBarTintManagerVersion"
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+
+    implementation "androidx.lifecycle:lifecycle-runtime:$rootProject.ext.lifecycleVersion"
+    // alternately - if using Java8, use the following instead of lifecycle-compiler
+    implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.ext.lifecycleVersion"
+}
+repositories {
+    mavenCentral()
 }

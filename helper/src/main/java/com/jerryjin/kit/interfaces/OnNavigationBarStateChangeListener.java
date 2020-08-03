@@ -1,4 +1,4 @@
-package com.jerryjin.kit.navigationBar;
+package com.jerryjin.kit.interfaces;
 
 /**
  * Author: Jerry
