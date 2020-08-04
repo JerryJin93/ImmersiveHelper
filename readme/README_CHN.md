@@ -33,7 +33,7 @@ dependencies {
 
 
 
-A. 已有项目中的BaseActivity extends [ImmersiveActivity](../src/main/java/com/jerryjin/kit/ImmersiveActivity.java)
+A. 已有项目中的BaseActivity extends [ImmersiveActivity](../helper/src/main/java/com/jerryjin/kit/ImmersiveActivity.java)
 
 然后重写以下的三个方法：
 
