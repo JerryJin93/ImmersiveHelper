@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        ImmersiveHelper.setLoggerStatus(true);
+        ImmersiveHelper.enableLogger(true);
 
         helper = new ImmersiveHelper(this)
                 .setStatusBarMode(false)

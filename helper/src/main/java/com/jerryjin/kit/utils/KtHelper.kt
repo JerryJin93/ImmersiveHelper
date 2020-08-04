@@ -9,10 +9,14 @@ package com.jerryjin.kit.utils
  * Version: 2.0.0
  * Description:
  */
+fun StringBuilder.deleteLast() = this.deleteCharAt(length - 1)
 fun String.mutate() = StringBuilder(this)
 
 class KotlinCompat {
     companion object {
+
+        @JvmStatic
+        fun deleteLast(str: String) = str.mutate().deleteLast().toString()
 
         @JvmStatic
         fun mutableString(str: String) = str.mutate()

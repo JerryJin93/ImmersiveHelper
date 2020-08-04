@@ -76,7 +76,7 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
      *
      * @param enable True if to enable, false otherwise.
      */
-    public static void setLoggerStatus(boolean enable) {
+    public static void enableLogger(boolean enable) {
         Logger.setLoggable(enable);
     }
 
@@ -207,16 +207,16 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
         }
     }
 
-    public void notifyWindowFocusChanged(boolean hasFocus) {
+    public void notifyWindowFocusChanged() {
         if (decorationInfo == null) {
             throw new IllegalStateException("You cannot call notifyWindowFocusChanged after disposing.");
         }
         if (!hasOptimized) {
-            Logger.i(TAG, "notifyWindowFocusChanged", StringHelper.format("Configuration %s", String.valueOf(hasFocus)), "Not optimized yet, let's optimize it.");
+            Logger.i(TAG, "notifyWindowFocusChanged", "Not optimized yet, let's optimize it.");
             optimize();
         }
         if (ActivityUIHelper.needOptimizeNavigationBar(activity) && onOptimizeCallback != null) {
-            onOptimizeCallback.onOptimized(decorationInfo, hasFocus);
+            onOptimizeCallback.onOptimized(decorationInfo);
         }
     }
 

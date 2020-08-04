@@ -33,7 +33,7 @@ public abstract class ImmersiveActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        helper.notifyWindowFocusChanged(hasFocus);
+        helper.notifyWindowFocusChanged();
     }
 
     @Override

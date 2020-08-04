@@ -11,6 +11,6 @@ import com.jerryjin.kit.bean.DecorationInfo;
  * Version: 2.0.0
  * Description:
  */
-public interface OnOptimizeCallback extends OnOptimizeCallbackWithFocusParam {
+public interface OnOptimizeCallback {
     void onOptimized(DecorationInfo info);
 }

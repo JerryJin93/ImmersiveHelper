@@ -1,7 +1,7 @@
 # ImmersiveHelper
 A convenient tool for immersive experience on Android devices.
 
-[English README](/readme/README_ENG.md)
+[English Document](/readme/README_ENG.md)
 
 [中文版文档](readme/README_CHN.md)
 
