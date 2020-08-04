@@ -23,7 +23,7 @@ allprojects {
 ```
 dependencies {
 
-	implementation 'com.github.JerryJin93:ImmersiveHelper:1.0.5'
+	implementation 'com.github.JerryJin93:ImmersiveHelper:2.0.0'
 }
 ```
 
@@ -105,6 +105,15 @@ public void onConfigurationChanged(Configuration newConfig) {
 
 ```java
 helper.dispose();
+```
+
+
+
+### OptimizationType
+
+```java
+TYPE_IMMERSIVE;  // 沉浸式状态栏
+TYPE_FULLSCREEN; // 沉浸式全屏
 ```
 
 
