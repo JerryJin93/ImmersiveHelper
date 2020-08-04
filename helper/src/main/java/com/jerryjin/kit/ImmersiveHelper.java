@@ -2,7 +2,9 @@ package com.jerryjin.kit;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import com.jerryjin.kit.manufacturer.Manufacturer;
 import com.jerryjin.kit.notch.NotchFactory;
 import com.jerryjin.kit.notch.NotchHelper;
 import com.jerryjin.kit.utils.ActivityUIHelper;
+import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 import com.jerryjin.kit.utils.navigationBar.NavigationBarHelper;
@@ -38,7 +41,7 @@ import static com.jerryjin.kit.utils.statusBar.StatusBarHelper.toggleStatusBarTe
 @SuppressWarnings("WeakerAccess")
 public class ImmersiveHelper implements ImmersiveLifecycle {
 
-    private static final String TAG = ImmersiveHelper.class.getSimpleName();
+    private static final String TAG = "ImmersiveHelper";
 
     private Activity activity;
     private boolean hasOptimized;
@@ -59,6 +62,10 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
     }
 
     private void saveDecorationColor() {
+        if (activity == null) {
+            Logger.e(TAG, "saveDecorationColor", ERR_NULL_ACTIVITY);
+            return;
+        }
         Window window = activity.getWindow();
         this.previousStatusBarColor = window.getStatusBarColor();
         this.previousNavigationBarColor = window.getNavigationBarColor();
@@ -131,6 +138,10 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
             Logger.e(TAG, "optimizeFullScreen", ERR_NULL_ACTIVITY);
             return;
         }
+        toggleStatusBarTextColor(activity, isStatusBarTextDark);
+        if (Utils.getManufacturer().toLowerCase().equals(Manufacturer.MI)) {
+            toggleStatusBarTextColorForMIUI(activity, isStatusBarTextDark);
+        }
         if (onOptimizeCallback != null) {
             activity.getWindow().getDecorView().post(() -> {
                 decorationInfo = new DecorationInfo.Builder()
@@ -186,8 +197,10 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
         if (decorationInfo == null) {
             throw new IllegalStateException("You cannot call notifyConfigurationChanged after disposing.");
         }
-        if (!hasOptimized)
+        if (!hasOptimized) {
+            Logger.i(TAG, "notifyConfigurationChanged", StringHelper.format("Configuration %s", config.toString()), "Not optimized yet, let's optimize it.");
             optimize();
+        }
         decorationInfo.setOrientation(config.orientation);
         if (onOptimizeCallback != null) {
             onOptimizeCallback.onOptimized(decorationInfo);
@@ -197,6 +210,10 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
     public void notifyWindowFocusChanged(boolean hasFocus) {
         if (decorationInfo == null) {
             throw new IllegalStateException("You cannot call notifyWindowFocusChanged after disposing.");
+        }
+        if (!hasOptimized) {
+            Logger.i(TAG, "notifyWindowFocusChanged", StringHelper.format("Configuration %s", String.valueOf(hasFocus)), "Not optimized yet, let's optimize it.");
+            optimize();
         }
         if (ActivityUIHelper.needOptimizeNavigationBar(activity) && onOptimizeCallback != null) {
             onOptimizeCallback.onOptimized(decorationInfo, hasFocus);
@@ -215,6 +232,8 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
         isStatusBarTextDark = false;
         optimizationType = OptimizationType.TYPE_IMMERSIVE;
         onOptimizeCallback = null;
-        this.previousStatusBarColor = Color.TRANSPARENT;
+        // PhoneWindow#generateLayout()
+        this.previousStatusBarColor = Color.parseColor("#0xFF000000");
+        this.previousNavigationBarColor = Color.parseColor("#0xFF000000");
     }
 }

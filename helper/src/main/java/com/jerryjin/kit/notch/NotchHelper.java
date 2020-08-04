@@ -8,6 +8,7 @@ import com.jerryjin.kit.bean.NotchInfo;
 import com.jerryjin.kit.interfaces.INotch;
 import com.jerryjin.kit.interfaces.NotchCallback;
 import com.jerryjin.kit.utils.ActivityUIHelper;
+import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 
@@ -44,10 +45,11 @@ public class NotchHelper {
     @SuppressLint("ObsoleteSdkInt")
     public static boolean undoOptimization(Activity activity, int previousStatusBarColor, int previousNavigationBarColor) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            Logger.e(TAG, "undoOptimization", Utils.format("Activity activity, int %d", previousStatusBarColor), MSG_NOT_TO_UNDO_OPTIMIZATION);
+            Logger.e(TAG, "undoOptimization", StringHelper.format("Activity activity, int %d", previousStatusBarColor), MSG_NOT_TO_UNDO_OPTIMIZATION);
             return false;
         }
         if (!ActivityUIHelper.isImmersive(activity)) return false;
+        NotchFactory.getNotch().applyNotch(activity, false);
         ActivityUIHelper.undoOptimizationForImmersive(activity, previousStatusBarColor, previousNavigationBarColor);
         return true;
     }

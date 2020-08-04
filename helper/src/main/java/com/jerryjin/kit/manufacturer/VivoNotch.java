@@ -4,7 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import com.jerryjin.kit.notch.AbsNotch;
-import com.jerryjin.kit.utils.Constants;
+import com.jerryjin.kit.utils.LoggerConstants;
+import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 
@@ -19,7 +20,7 @@ import static com.jerryjin.kit.utils.log.Logger.LOGGABLE;
  * Blog:
  * WeChat: enGrave93
  * Version: 2.0.0
- * Description: Vivo手机
+ * Description: Vivo手机刘海屏
  */
 @SuppressWarnings("SpellCheckingInspection")
 public class VivoNotch extends AbsNotch {
@@ -32,8 +33,7 @@ public class VivoNotch extends AbsNotch {
     protected boolean isNotchHardwareSupported(Activity activity) {
         boolean isNotchHardwareSupported = false;
         final String methodName = "isNotchHardwareSupported";
-        final String param = LOGGABLE ? activity.getClass().getSimpleName() : Constants.EMPTY_STRING;
-        final String paramStr = Utils.format("Activity %s", param);
+        final String param = StringHelper.getActivityAsParamForLogger(activity);
         try {
             ClassLoader classLoader = activity.getClassLoader();
             @SuppressLint("PrivateApi")
@@ -42,15 +42,16 @@ public class VivoNotch extends AbsNotch {
             isNotchHardwareSupported = (boolean) method.invoke(FtFeature, VIVO_NOTCH) | (boolean) method.invoke(FtFeature, VIVO_FILLET);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Logger.e(TAG, methodName, paramStr, Utils.format("ClassNotFoundException e: %s", e.getMessage()));
+            Logger.e(TAG, methodName, param, StringHelper.format("ClassNotFoundException e: %s.", e.getMessage()));
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            Logger.e(TAG, methodName, paramStr, Utils.format("NoSuchMethodException e: %s", e.getMessage()));
+            Logger.e(TAG, methodName, param, StringHelper.format("NoSuchMethodException e: %s.", e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.e(TAG, methodName, paramStr, Utils.format("Exception e: %s", e.getMessage()));
+            Logger.e(TAG, methodName, param, StringHelper.format("Exception e: %s.", e.getMessage()));
         }
-        Logger.i(TAG, methodName, paramStr, "Notch on the current VIVO device is " + (isNotchHardwareSupported ? "enabled" : "disabled") + Constants.PERIOD);
+        Logger.i(TAG, methodName, param,
+                StringHelper.getNotchHardwareSupportedStatusMsgForLogger(Utils.getManufacturer(), Utils.getModel(), isNotchHardwareSupported));
         return isNotchHardwareSupported;
     }
 

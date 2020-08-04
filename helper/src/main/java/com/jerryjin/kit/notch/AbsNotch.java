@@ -10,8 +10,9 @@ import android.view.WindowManager;
 import androidx.annotation.RequiresApi;
 
 import com.jerryjin.kit.interfaces.INotch;
+import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
-import com.jerryjin.kit.utils.Constants;
+import com.jerryjin.kit.utils.LoggerConstants;
 import com.jerryjin.kit.utils.log.Logger;
 import com.jerryjin.kit.bean.NotchInfo;
 
@@ -37,6 +38,7 @@ public abstract class AbsNotch implements INotch {
     private static final String MSG_NO_NOTCH_DETECTED = "No notch detected.";
     protected static final int[] ZERO_NOTCH = {0, 0};
 
+    private boolean isNotchApplied;
     private String tag;
 
     public AbsNotch() {
@@ -91,6 +93,7 @@ public abstract class AbsNotch implements INotch {
         WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
         lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         activity.getWindow().setAttributes(lp);
+        isNotchApplied = true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -102,28 +105,31 @@ public abstract class AbsNotch implements INotch {
         WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
         lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
         activity.getWindow().setAttributes(lp);
+        isNotchApplied = false;
     }
 
     protected abstract boolean hasNotchOreo(Activity activity);
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     protected boolean hasNotchPie(Activity activity) {
+        final String methodName = "hasNotchPie";
         if (activity == null) {
+            Logger.e(tag, methodName, ERR_NULL_ACTIVITY);
             return false;
         }
-        final String methodName = "hasNotchPie";
         final String pattern = "Activity %s";
-        final String param = LOGGABLE ? activity.getClass().getSimpleName() : Constants.EMPTY_STRING;
+        final String param = LOGGABLE ? activity.getClass().getSimpleName() : LoggerConstants.EMPTY_STRING;
         WindowInsets windowInsets = activity.getWindow().getDecorView().getRootWindowInsets();
         if (windowInsets == null) {
-            Logger.e(tag, methodName, Utils.format(pattern, param), MSG_NO_NOTCH_DETECTED);
+            Logger.e(tag, methodName, StringHelper.format(pattern, param), MSG_NO_NOTCH_DETECTED);
             return false;
         }
         DisplayCutout displayCutout = windowInsets.getDisplayCutout();
         if (displayCutout == null) {
-            Logger.i(tag, methodName, Utils.format(pattern, param), MSG_NO_NOTCH_DETECTED);
+            Logger.e(tag, methodName, StringHelper.format(pattern, param), MSG_NO_NOTCH_DETECTED);
             return false;
         }
+        Logger.d(tag, methodName, StringHelper.format(pattern, param), "Going to figure out whether there is any cutout or not.");
         return hasCutout(displayCutout.getBoundingRects());
     }
 
@@ -138,21 +144,22 @@ public abstract class AbsNotch implements INotch {
             return notchSize;
         }
         WindowInsets windowInsets = activity.getWindow().getDecorView().getRootWindowInsets();
-        String param = LOGGABLE ? activity.toString() : Constants.EMPTY_STRING;
+        String param = LOGGABLE ? activity.toString() : LoggerConstants.EMPTY_STRING;
         String pattern = "Activity %s";
         if (windowInsets == null) {
-            Logger.i(tag, methodName, Utils.format(pattern, param), "Null WindowInsets, the DecorView hasn't been attached to Window yet.");
+            Logger.i(tag, methodName, StringHelper.format(pattern, param), "Null WindowInsets, the DecorView hasn't been attached to Window yet.");
             return notchSize;
         }
         DisplayCutout displayCutout = windowInsets.getDisplayCutout();
         if (displayCutout == null) {
-            Logger.i(tag, methodName, Utils.format(pattern, param), MSG_NO_NOTCH_DETECTED);
+            Logger.i(tag, methodName, StringHelper.format(pattern, param), MSG_NO_NOTCH_DETECTED);
             return notchSize;
         }
 
         List<Rect> boundingRectList = displayCutout.getBoundingRects();
+        Logger.d(tag, methodName, StringHelper.format(pattern, param), "Going to figure out whether there is any cutout or not.");
         if (!hasCutout(boundingRectList)) {
-            Logger.i(tag, methodName, Utils.format(pattern, param), MSG_NO_NOTCH_DETECTED);
+            Logger.i(tag, methodName, StringHelper.format(pattern, param), MSG_NO_NOTCH_DETECTED);
             return notchSize;
         }
 
@@ -164,6 +171,8 @@ public abstract class AbsNotch implements INotch {
 
     @Override
     public NotchInfo obtainNotch(Activity activity) {
+        final String methodName = "obtainNotch";
+
         if (!hasNotch(activity)) return null;
         NotchInfo notchInfo = new NotchInfo();
         notchInfo.setManufacturer(manufacturer);
@@ -173,6 +182,7 @@ public abstract class AbsNotch implements INotch {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notchSpec = getNotchSpecOreo(activity);
         } else {
+            Logger.i(tag, methodName, StringHelper.format("A"));
             return null;
         }
         notchInfo.setNotchWidth(notchSpec[0]);
@@ -181,6 +191,7 @@ public abstract class AbsNotch implements INotch {
     }
 
     private boolean hasCutout(List<Rect> boundRectList) {
+        final String methodName = "hasCutout";
         if (boundRectList == null) {
             return false;
         }
@@ -189,15 +200,19 @@ public abstract class AbsNotch implements INotch {
         }
         for (Rect rect : boundRectList) {
             if (rect.left != 0 || rect.top != 0 || rect.right != 0 || rect.bottom != 0) {
+                Logger.i(tag, methodName, "We got notch here.");
                 return true;
             }
         }
+        Logger.i(tag, methodName, "There is not any notch has been found.");
         return false;
     }
 
     @Override
     public boolean hasNotch(Activity activity) {
+        final String methodName = "hasNotch";
         if (activity == null) {
+            Logger.e(tag, methodName, ERR_NULL_ACTIVITY);
             return false;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -205,7 +220,18 @@ public abstract class AbsNotch implements INotch {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return hasNotchOreo(activity);
         } else {
+            Logger.i(tag, methodName, StringHelper.format("Activity %s", activity.getClass().getSimpleName()),
+                    "Current OS version is under Android O, we assert there is no Notch available.");
             return false;
         }
+    }
+
+    protected void notifyNotchStatus(boolean applied) {
+        this.isNotchApplied = applied;
+    }
+
+    @Override
+    public boolean isNotchApplied() {
+        return isNotchApplied;
     }
 }

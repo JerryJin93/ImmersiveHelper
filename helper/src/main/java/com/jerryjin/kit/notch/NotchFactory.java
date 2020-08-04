@@ -21,28 +21,31 @@ import com.jerryjin.kit.utils.Utils;
  */
 public class NotchFactory {
 
+    private static INotch notch;
+
     public static INotch getNotch() {
-        INotch notch;
-        String manufacturer = Utils.getManufacturer();
-        switch (manufacturer) {
-            case Manufacturer.MI:
-                notch = new XiaoMiNotch();
-                break;
-            case Manufacturer.HUAWEI:
-                notch = new HuaweiNotch();
-                break;
-            case Manufacturer.OPPO:
-                notch = new OppoNotch();
-                break;
-            case Manufacturer.VIVO:
-                notch = new VivoNotch();
-                break;
-            case Manufacturer.SMARTISAN:
-                notch = new SmartisanNotch();
-                break;
-            default:
-                notch = new AndroidNotch();
-                break;
+        if (notch == null) {
+            String manufacturer = Utils.getManufacturer();
+            switch (manufacturer) {
+                case Manufacturer.MI:
+                    notch = new XiaoMiNotch();
+                    break;
+                case Manufacturer.HUAWEI:
+                    notch = new HuaweiNotch();
+                    break;
+                case Manufacturer.OPPO:
+                    notch = new OppoNotch();
+                    break;
+                case Manufacturer.VIVO:
+                    notch = new VivoNotch();
+                    break;
+                case Manufacturer.SMARTISAN:
+                    notch = new SmartisanNotch();
+                    break;
+                default:
+                    notch = new AndroidNotch();
+                    break;
+            }
         }
         return notch;
     }

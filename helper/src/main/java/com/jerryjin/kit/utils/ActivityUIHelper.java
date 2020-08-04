@@ -72,8 +72,8 @@ public class ActivityUIHelper {
         decorView.post(() -> {
             INotch notch = NotchFactory.getNotch();
             if (notch.hasNotch(activity)) {
-                String param = LOGGABLE ? activity.toString() : Constants.EMPTY_STRING;
-                Logger.i(TAG, methodName, Utils.format("Activity %s", param), "Let's apply notch first.");
+                String param = LOGGABLE ? activity.toString() : LoggerConstants.EMPTY_STRING;
+                Logger.i(TAG, methodName, StringHelper.format("Activity %s", param), "Let's apply notch first.");
                 notch.applyNotch(activity, true);
             }
             decorView.setSystemUiVisibility(FULL_SCREEN_UI_OPTIONS);
@@ -95,7 +95,7 @@ public class ActivityUIHelper {
             return false;
         }
         Window window = activity.getWindow();
-        return window.getStatusBarColor() == Color.TRANSPARENT &&
+        return NotchFactory.getNotch().isNotchApplied() && window.getStatusBarColor() == Color.TRANSPARENT &&
                 ((window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION) == View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     }
 

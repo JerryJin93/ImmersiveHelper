@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.jerryjin.kit.notch.AbsNotch;
-import com.jerryjin.kit.utils.Constants;
+import com.jerryjin.kit.utils.LoggerConstants;
+import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 import com.jerryjin.kit.utils.statusBar.StatusBarHelper;
@@ -57,13 +58,13 @@ public class OppoNotch extends AbsNotch {
     private boolean isNotchHardwareSupported(Activity activity) {
         final String methodName = "isNotchHardwareSupported";
         if (activity == null) {
-            Logger.e(TAG, "", ERR_NULL_ACTIVITY);
+            Logger.e(TAG, methodName, ERR_NULL_ACTIVITY);
             return false;
         }
         boolean isNotchHardwareSupported = activity.getPackageManager().hasSystemFeature("com.oppo.feature.screen.heteromorphism");
-        final String param = LOGGABLE ? activity.getClass().getSimpleName() : Constants.EMPTY_STRING;
-        final String paramStr = Utils.format("Activity %s", param);
-        Logger.i(TAG, methodName, paramStr, "Notch on the current OPPO device is " + (isNotchHardwareSupported ? "enabled" : "disabled") + Constants.PERIOD);
+        final String paramStr = StringHelper.getActivityAsParamForLogger(activity);
+        Logger.i(TAG, methodName, paramStr,
+                StringHelper.getNotchHardwareSupportedStatusMsgForLogger(Utils.getManufacturer(), Utils.getModel(), isNotchHardwareSupported));
         return isNotchHardwareSupported;
     }
 
@@ -92,7 +93,7 @@ public class OppoNotch extends AbsNotch {
                 return new int[]{notchWidth, notchHeight};
             }
         } catch (Exception e) {
-            Logger.e(TAG, methodName, Utils.format("Exception e: %s", e.getMessage()));
+            Logger.e(TAG, methodName, StringHelper.format("Exception e: %s.", e.getMessage()));
         }
         return null;
     }

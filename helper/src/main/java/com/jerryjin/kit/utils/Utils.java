@@ -6,12 +6,9 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
-import com.jerryjin.kit.utils.Constants;
 import com.jerryjin.kit.utils.log.Logger;
-import com.wcl.notchfit.utils.LogUtils;
 
 import java.lang.reflect.Method;
-import java.util.Locale;
 
 /**
  * Author: Jerry
@@ -31,12 +28,8 @@ public class Utils {
         return Build.MANUFACTURER;
     }
 
-    public static String format(String pattern, Object... args) {
-        if (pattern == null) {
-            Logger.e(TAG, "format", "String pattern, Object... args");
-            return Constants.EMPTY_STRING;
-        }
-        return String.format(Locale.getDefault(), pattern, args);
+    public static String getModel() {
+        return Build.MODEL;
     }
 
     public static int dp2px(Context context, float dp) {
@@ -61,7 +54,7 @@ public class Utils {
             Object object = cls.newInstance();
             value = (String) hideMethod.invoke(object, key);
         } catch (Exception e) {
-            Logger.e(TAG, "getStringFromSystemProperties", Utils.format("String %s", key), Utils.format("Exception e: %s", e.getMessage()));
+            Logger.e(TAG, "getStringFromSystemProperties", StringHelper.format("String %s", key), StringHelper.format("Exception e: %s", e.getMessage()));
         }
         return value;
     }

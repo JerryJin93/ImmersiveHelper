@@ -17,6 +17,7 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 import com.jerryjin.kit.interfaces.OnNavigationBarStateChangeListener;
@@ -183,7 +184,7 @@ public class NavigationBarHelper {
         final String param = activity.toString();
         WindowManager wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
         if (wm == null) {
-            Logger.e(TAG, methodName, Utils.format("Activity %s", param), "Null WindowManager retrieved.");
+            Logger.e(TAG, methodName, StringHelper.format("Activity %s", param), "Null WindowManager retrieved.");
             return null;
         }
         Point point = new Point();

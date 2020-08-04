@@ -19,7 +19,7 @@ class KotlinCompat {
     }
 }
 
-class Constants {
+class LoggerConstants {
     companion object {
         const val EMPTY_STRING = ""
         const val PERIOD = "."
@@ -27,5 +27,7 @@ class Constants {
         const val LOG_BRACKET_LEFT = "("
         const val LOG_BRACKET_RIGHT = ")"
         const val PUSH  = " -> "
+        const val PATTERN_PARAM_ACTIVITY = "Activity %s"
+        const val LOG_ACTIVITY = "Activity"
     }
 }

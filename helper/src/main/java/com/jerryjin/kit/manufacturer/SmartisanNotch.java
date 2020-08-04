@@ -3,6 +3,7 @@ package com.jerryjin.kit.manufacturer;
 import android.app.Activity;
 
 import com.jerryjin.kit.notch.AbsNotch;
+import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 
@@ -30,26 +31,26 @@ public class SmartisanNotch extends AbsNotch {
 
     protected boolean isNotchHardwareSupported() {
         final String methodName = "isNotchHardwareSupported";
-        boolean supportNotch = false;
+        boolean isNotchHardwareSupported = false;
         try {
             Class<?> DisplayUtilsSmt = Class.forName("smartisanos.api.DisplayUtilsSmt");
             Method isFeatureSupport = DisplayUtilsSmt.getMethod("isFeatureSupport", int.class);
-            supportNotch = (boolean) isFeatureSupport.invoke(DisplayUtilsSmt, 0x00000001);
+            isNotchHardwareSupported = (boolean) isFeatureSupport.invoke(DisplayUtilsSmt, 0x00000001);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Logger.e(TAG, methodName, Utils.format("ClassNotFoundException e: %s", e.getMessage()));
+            Logger.e(TAG, methodName, StringHelper.format("ClassNotFoundException e: %s.", e.getMessage()));
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            Logger.e(TAG, methodName, Utils.format("NoSuchMethodException e: %s", e.getMessage()));
+            Logger.e(TAG, methodName, StringHelper.format("NoSuchMethodException e: %s.", e.getMessage()));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            Logger.e(TAG, methodName, Utils.format("IllegalAccessException e: %s", e.getMessage()));
+            Logger.e(TAG, methodName, StringHelper.format("IllegalAccessException e: %s.", e.getMessage()));
         } catch (InvocationTargetException e) {
-            Logger.e(TAG, methodName, Utils.format("InvocationTargetException e: %s", e.getMessage()));
             e.printStackTrace();
+            Logger.e(TAG, methodName, StringHelper.format("InvocationTargetException e: %s.", e.getMessage()));
         }
-        Logger.i(TAG, methodName, String.valueOf(supportNotch));
-        return supportNotch;
+        Logger.i(TAG, methodName, StringHelper.getNotchHardwareSupportedStatusMsgForLogger(Utils.getManufacturer(), Utils.getModel(), isNotchHardwareSupported));
+        return isNotchHardwareSupported;
     }
 
     @Override

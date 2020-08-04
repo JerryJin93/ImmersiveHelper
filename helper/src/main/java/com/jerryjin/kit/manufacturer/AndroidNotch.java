@@ -2,9 +2,9 @@ package com.jerryjin.kit.manufacturer;
 
 import android.app.Activity;
 
-import com.jerryjin.kit.utils.Utils;
-import com.jerryjin.kit.utils.log.Logger;
 import com.jerryjin.kit.notch.AbsNotch;
+import com.jerryjin.kit.utils.StringHelper;
+import com.jerryjin.kit.utils.log.Logger;
 
 /**
  * Author: Jerry
@@ -22,13 +22,13 @@ public class AndroidNotch extends AbsNotch {
 
     @Override
     protected boolean hasNotchOreo(Activity activity) {
-        Logger.i(TAG, "hasNotchOreo", Utils.format("Activity %s", activity.getClass().getSimpleName()), MSG);
+        Logger.i(TAG, "hasNotchOreo", StringHelper.getActivityAsParamForLogger(activity), MSG);
         return false;
     }
 
     @Override
     protected int[] getNotchSpecOreo(Activity activity) {
-        Logger.i(TAG, "getNotchSpecOreo", Utils.format("Activity %s", activity.getClass().getSimpleName()), MSG);
+        Logger.i(TAG, "getNotchSpecOreo", StringHelper.getActivityAsParamForLogger(activity), MSG);
         return ZERO_NOTCH;
     }
 }
