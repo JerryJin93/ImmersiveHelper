@@ -14,13 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.jerryjin.kit.utils.StringHelper;
-import com.jerryjin.kit.utils.Utils;
-import com.jerryjin.kit.utils.log.Logger;
+import com.jerryjin.kit.OrientationSpec;
 import com.jerryjin.kit.interfaces.OnNavigationBarStateChangeListener;
+import com.jerryjin.kit.utils.OrientationHelper;
+import com.jerryjin.kit.utils.ScreenUtils;
 
 import java.lang.reflect.Method;
 
@@ -29,8 +28,8 @@ import java.lang.reflect.Method;
  * Generated at: 2019/3/29 11:17
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
- * Version: 1.0.6
+ * WeChat: AcornLake
+ * Version: 2.0.0
  * Description: A helper for navigation bar of Android.
  */
 @SuppressWarnings("WeakerAccess")
@@ -44,6 +43,8 @@ public class NavigationBarHelper {
      */
     public static final int DEFAULT_COLOR_FOR_CUSTOMIZED_NAVIGATION_BAR = Color.LTGRAY;
     private static final String TAG = NavigationBarHelper.class.getSimpleName();
+
+    private static boolean isNavigationBarShown = true;
 
     private NavigationBarHelper() {
     }
@@ -106,29 +107,23 @@ public class NavigationBarHelper {
      * @param activity The given Activity.
      * @return True if the navigation bar is visible, false otherwise.
      */
-    public static boolean isNavBarShow(Activity activity) {
+    public static boolean isNavBarShown(Activity activity) {
         if (activity == null) {
             Log.e(TAG, "Method isNavBarShow(Activity activity) is invoked. Null given activity.");
             return false;
         }
-        boolean show = false;
-        Point point = getRealSize(activity);
-        if (point != null) {
-            Window window = activity.getWindow();
-            View decorView = window.getDecorView();
-            Configuration conf = window.getContext().getResources().getConfiguration();
-            if (Configuration.ORIENTATION_LANDSCAPE == conf.orientation) {
-                View contentView = decorView.findViewById(android.R.id.content);
-                show = (point.x != contentView.getWidth());
-            } else {
-                Rect rect = new Rect();
-                decorView.getWindowVisibleDisplayFrame(rect);
-                Log.i(TAG, "Window visible display frame height： " + rect.bottom + ". The real height of the screen: " + point.y);
-                Log.i(TAG, "Navigation bar height： " + getNavBarHeight(activity));
-                show = (rect.bottom != point.y);
-            }
-        }
-        return show;
+        boolean shown;
+        Point point = ScreenUtils.getRealSize(activity);
+        Window window = activity.getWindow();
+        View decorView = window.getDecorView();
+        Configuration conf = window.getContext().getResources().getConfiguration();
+        Rect rect = new Rect();
+        decorView.getWindowVisibleDisplayFrame(rect);
+        Log.i(TAG, "Window visible display frame height： " + rect.bottom + ". The real height of the screen: " + point.y);
+        Log.i(TAG, "Navigation bar height： " + getNavBarHeight(activity));
+        isNavigationBarShown = shown = Configuration.ORIENTATION_LANDSCAPE == conf.orientation ?
+                rect.width() < point.x : rect.bottom != point.y;
+        return shown;
     }
 
     /**
@@ -140,7 +135,7 @@ public class NavigationBarHelper {
      * @param onNavigationBarStateChangeListener OnNavigationBarStateChangeListener.
      */
     @SuppressLint("ObsoleteSdkInt")
-    public static void isNavBarShow(Activity activity, final OnNavigationBarStateChangeListener onNavigationBarStateChangeListener) {
+    public static void isNavBarShown(Activity activity, final OnNavigationBarStateChangeListener onNavigationBarStateChangeListener) {
         if (activity == null) {
             Log.e(TAG, "Method " +
                     "isNavBarShow(Activity activity, OnNavigationBarStateChangeListener onNavigationBarStateChangeListener)" +
@@ -153,47 +148,26 @@ public class NavigationBarHelper {
                 @Override
                 public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
                     if (insets != null) {
-                        int bottom = insets.getSystemWindowInsetBottom();
+                        final int left = insets.getSystemWindowInsetLeft();
+                        final int top = insets.getSystemWindowInsetTop();
+                        final int right = insets.getSystemWindowInsetRight();
+                        final int bottom = insets.getSystemWindowInsetBottom();
                         Log.i(TAG, "SystemWindowInsetLeft: " + insets.getSystemWindowInsetLeft()
                                 + ". SystemWindowInsetTop: " + insets.getSystemWindowInsetTop() + ". SystemWindowInsetRight: "
                                 + insets.getSystemWindowInsetRight() + ". SystemWindowInsetBottom: " + insets.getSystemWindowInsetBottom());
-                        boolean isShowing = bottom == navigationBarHeight;
-                        if (bottom <= navigationBarHeight && onNavigationBarStateChangeListener != null) {
-                            onNavigationBarStateChangeListener.onNavigationBarStateChanged(isShowing, navigationBarHeight);
+                        int orientation = OrientationHelper.getCurrentOrientation(activity);
+                        boolean isShowing = (left == navigationBarHeight && orientation == OrientationSpec.LANDSCAPE_REVERSED) ||
+                                (top == navigationBarHeight && orientation == OrientationSpec.PORTRAIT_REVERSED) ||
+                                (bottom == navigationBarHeight && orientation == OrientationSpec.PORTRAIT) ||
+                                (right == navigationBarHeight && orientation == OrientationSpec.LANDSCAPE);
+                        if (isShowing != isNavigationBarShown && onNavigationBarStateChangeListener != null) {
+                            onNavigationBarStateChangeListener.onNavigationBarStateChanged(isNavigationBarShown = isShowing, navigationBarHeight);
                         }
                     }
                     return insets;
                 }
             });
         }
-    }
-
-    /**
-     * Get the real size of the device screen.
-     *
-     * @param activity The given Activity.
-     * @return A Point object which contains the width and height of the screen.
-     */
-    @SuppressLint("ObsoleteSdkInt")
-    public static Point getRealSize(Activity activity) {
-        final String methodName = "getRealSize";
-        if (null == activity) {
-            Logger.e(TAG, methodName, "activity", "Null given activity.");
-            return null;
-        }
-        final String param = activity.toString();
-        WindowManager wm = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
-        if (wm == null) {
-            Logger.e(TAG, methodName, StringHelper.format("Activity %s", param), "Null WindowManager retrieved.");
-            return null;
-        }
-        Point point = new Point();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            wm.getDefaultDisplay().getRealSize(point);
-        } else {
-            wm.getDefaultDisplay().getSize(point);
-        }
-        return point;
     }
 
     /**
@@ -209,7 +183,7 @@ public class NavigationBarHelper {
             Log.e(TAG, "Null given activity.");
             return;
         }
-        if (!hasNavBar(activity) || !isNavBarShow(activity)) {
+        if (!hasNavBar(activity) || !isNavBarShown(activity)) {
             return;
         }
         View decorView = activity.getWindow().getDecorView();

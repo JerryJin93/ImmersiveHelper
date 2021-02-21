@@ -9,13 +9,13 @@ import androidx.lifecycle.LifecycleOwner;
  * Generated at: 2020/8/3 15:28
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description:
  */
 public class ImmersiveLifecycleObserver implements DefaultLifecycleObserver {
 
-    private ImmersiveLifecycle immersiveLifecycle;
+    private final ImmersiveLifecycle immersiveLifecycle;
 
     public ImmersiveLifecycleObserver(ImmersiveLifecycle immersiveLifecycle) {
         this.immersiveLifecycle = immersiveLifecycle;

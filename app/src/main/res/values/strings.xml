@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ImmersiveHelper</string>
-    <string name="immersive_status_bar_with_img_on_top">顶部透明的沉浸式状态栏</string>
-    <string name="immersive_status_bar_with_solid_color">顶部不透明的沉浸式状态栏</string>
-    <string name="cutout">刘海屏/水滴屏/挖孔屏…</string>
+    <string name="text_demo_immersive_activity">ImmersiveActivity demo</string>
+    <string name="text_demo_fullscreen_activity">Fullscreen Activity demo</string>
+    <string name="text_demo_immersive_activity_text_view">Hello ImmersiveActivity.</string>
+    <string name="text_demo_fullscreen_activity_text_view">Welcome to this fullscreen demo. ;) Here are some text to test… Here are some text to test…</string>
 </resources>

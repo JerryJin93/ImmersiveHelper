@@ -1,6 +1,7 @@
-package com.jerryjin.kit.bean;
+package com.jerryjin.kit.model;
 
-import android.content.res.Configuration;
+import com.jerryjin.kit.OrientationSpec;
+import com.jerryjin.kit.utils.OrientationHelper;
 
 import java.util.Objects;
 
@@ -13,25 +14,23 @@ import java.util.Objects;
  * Version: 2.0.0
  * Description:
  */
-public class DecorationInfo {
+public class SystemUIInfo {
 
     @Orientation
     private int orientation;
     private NotchInfo notchInfo;
-    private boolean hasNotch;
-    private int statusBarHeight;
-    private int navigationBarHeight;
+    private final boolean hasNotch;
+    private final boolean isNavigationBarShown;
+    private final int statusBarHeight;
+    private final int navigationBarHeight;
 
-    private DecorationInfo(Builder builder) {
+    private SystemUIInfo(Builder builder) {
         this.orientation = builder.orientation;
         this.notchInfo = builder.notchInfo;
         this.hasNotch = notchInfo != null;
+        this.isNavigationBarShown = builder.isNavigationBarShown;
         this.statusBarHeight = builder.statusBarHeight;
         this.navigationBarHeight = builder.navigationBarHeight;
-    }
-
-    public int getOrientation() {
-        return orientation;
     }
 
     public void setOrientation(@Orientation int orientation) {
@@ -54,12 +53,24 @@ public class DecorationInfo {
         return navigationBarHeight;
     }
 
-    public boolean isLandscape() {
-        return orientation == Configuration.ORIENTATION_LANDSCAPE;
+    public boolean isNavigationBarShown() {
+        return isNavigationBarShown;
+    }
+
+    public boolean isLandscapeLeftwards() {
+        return orientation == OrientationSpec.LANDSCAPE;
+    }
+
+    public boolean isReversedLandscape() {
+        return orientation == OrientationSpec.LANDSCAPE_REVERSED;
     }
 
     public boolean isPortrait() {
-        return orientation == Configuration.ORIENTATION_PORTRAIT;
+        return orientation == OrientationSpec.PORTRAIT;
+    }
+
+    public boolean isPortraitUpSideDown() {
+        return orientation == OrientationSpec.PORTRAIT_REVERSED;
     }
 
     public void resetNotchInfo() {
@@ -70,7 +81,7 @@ public class DecorationInfo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DecorationInfo that = (DecorationInfo) o;
+        SystemUIInfo that = (SystemUIInfo) o;
         return orientation == that.orientation &&
                 hasNotch == that.hasNotch &&
                 statusBarHeight == that.statusBarHeight &&
@@ -87,7 +98,7 @@ public class DecorationInfo {
     @Override
     public String toString() {
         return "DecorationInfo{" +
-                "orientation=" + orientation +
+                "orientation=" + OrientationHelper.parseOrientation(orientation) +
                 ", notchInfo=" + notchInfo +
                 ", hasNotch=" + hasNotch +
                 ", statusBarHeight=" + statusBarHeight +
@@ -100,6 +111,7 @@ public class DecorationInfo {
         @Orientation
         private int orientation;
         private NotchInfo notchInfo;
+        private boolean isNavigationBarShown;
         private int statusBarHeight;
         private int navigationBarHeight;
 
@@ -114,6 +126,11 @@ public class DecorationInfo {
             return this;
         }
 
+        public Builder setWhetherNavigationBarShow(boolean isNavigationBarShown) {
+            this.isNavigationBarShown = isNavigationBarShown;
+            return this;
+        }
+
         public Builder setStatusBarHeight(int statusBarHeight) {
             this.statusBarHeight = statusBarHeight;
             return this;
@@ -124,8 +141,8 @@ public class DecorationInfo {
             return this;
         }
 
-        public DecorationInfo build() {
-            return new DecorationInfo(this);
+        public SystemUIInfo build() {
+            return new SystemUIInfo(this);
         }
     }
 }

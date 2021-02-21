@@ -35,6 +35,7 @@ public class SmartisanNotch extends AbsNotch {
         try {
             Class<?> DisplayUtilsSmt = Class.forName("smartisanos.api.DisplayUtilsSmt");
             Method isFeatureSupport = DisplayUtilsSmt.getMethod("isFeatureSupport", int.class);
+            //noinspection ConstantConditions
             isNotchHardwareSupported = (boolean) isFeatureSupport.invoke(DisplayUtilsSmt, 0x00000001);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

@@ -25,9 +25,9 @@ import java.lang.reflect.Method;
  * Generated at: 2020/7/26 21:22
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
- * Description: 小米手机刘海屏
+ * Description: Android P以下小米手机刘海屏适配
  */
 @SuppressWarnings("SpellCheckingInspection")
 public class XiaoMiNotch extends AbsNotch {
@@ -42,6 +42,11 @@ public class XiaoMiNotch extends AbsNotch {
     private static final String POCO_F1 = "POCO F1";
     private static final String RED_MI_6_PRO = "Redmi 6 Pro";
 
+    /**
+     * 0x00000100 | 0x00000200 竖屏绘制到耳朵区
+     * 0x00000100 | 0x00000400 横屏绘制到耳朵区
+     * 0x00000100 | 0x00000200 | 0x00000400 横竖屏都绘制到耳朵区
+     */
     private static final int FLAG_NOTCH = 0x00000100 | 0x00000200 | 0x00000400;
 
     @Override
@@ -88,7 +93,7 @@ public class XiaoMiNotch extends AbsNotch {
         final String param = StringHelper.getActivityAsParamForLogger(activity);
         try {
             //noinspection JavaReflectionMemberAccess
-            Method method = Window.class.getMethod("clearExtraFlags ", int.class);
+            Method method = Window.class.getMethod("clearExtraFlags", int.class);
             method.invoke(activity.getWindow(), FLAG_NOTCH);
             Logger.i(TAG, methodName, param, StringHelper.format("We have recovered notch on XiaoMi device %s.", Utils.getModel()));
             notifyNotchStatus(false);
@@ -180,6 +185,7 @@ public class XiaoMiNotch extends AbsNotch {
             @SuppressLint("PrivateApi")
             Class<?> cls = Class.forName("android.os.SystemProperties");
             Method getIntMethod = cls.getMethod("getInt", String.class, int.class);
+            @SuppressWarnings("ConstantConditions")
             int invoke = (int) getIntMethod.invoke(null, "ro.miui.notch", 0);
             if (invoke == 1) {
                 Logger.i(TAG, methodName, "The current XiaoMi device " + Build.MODEL + " has notch physically.");

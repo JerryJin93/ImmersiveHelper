@@ -89,6 +89,7 @@ public class HuaweiNotch extends AbsNotch {
             Object layoutParamsExObj = con.newInstance(attributes);
             Method method = layoutParamsExCls.getMethod("addHwFlags", int.class);
             method.invoke(layoutParamsExObj, FLAG_NOTCH);
+            notifyNotchStatus(true);
             Logger.i(TAG, methodName, param, StringHelper.format("We have applied notch on Huawei device %s.", Utils.getModel()));
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -120,6 +121,7 @@ public class HuaweiNotch extends AbsNotch {
             Object layoutParamsExObj = con.newInstance(attributes);
             Method method = layoutParamsExCls.getMethod("clearHwFlags ", int.class);
             method.invoke(layoutParamsExObj, FLAG_NOTCH);
+            notifyNotchStatus(false);
             Logger.i(TAG, methodName, param, StringHelper.format("We have recovered notch on Huawei device %s.", Utils.getModel()));
         } catch (InstantiationException e) {
             e.printStackTrace();

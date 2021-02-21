@@ -1,17 +1,17 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.72'
+    ext.kotlin_version = '1.4.30'
     repositories {
         google()
         jcenter()
-        
+
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Add this line
-        
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -28,9 +28,37 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-ext{
-    supportVersion = "28.0.0"
-    notchFitVersion = "1.9"
-    systemBarTintManagerVersion = "1.0.3"
+ext {
     lifecycleVersion = "2.2.0"
+
+
+    configs = [
+            compileSdkVersion: 30,
+            buildToolsVersion: "30.0.2",
+            minSdkVersion    : 21,
+            targetSdkVersion : 30,
+            versionCode      : 6,
+            versionName      : "2.0.0"
+    ]
+
+
+    dependencies = [
+            kotlinSupport            : "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlin_version",
+            kotlinReflectSupport     : "org.jetbrains.kotlin:kotlin-reflect:$rootProject.ext.kotlin_version",
+            appCompat                : 'androidx.appcompat:appcompat:1.2.0',
+            fragment                 : 'androidx.fragment:fragment:1.2.5',
+            ktx                      : 'androidx.core:core-ktx:1.3.2',
+            lifecycleRuntime         : 'androidx.lifecycle:lifecycle-runtime:2.2.0',
+            lifecycleCompiler        : "androidx.lifecycle:lifecycle-compiler:2.2.0",
+            lifecycleCompilerForJava8: 'androidx.lifecycle:lifecycle-common-java8:2.2.0',
+            cardView                 : 'androidx.cardview:cardview:1.0.0',
+            constraintLayout         : 'androidx.constraintlayout:constraintlayout:2.0.4',
+            eventBus                 : 'org.greenrobot:eventbus:3.2.0',
+            material                 : 'com.google.android.material:material:1.2.1',
+            recyclerView             : 'androidx.recyclerview:recyclerview:1.1.0',
+            rxAndroid                : 'io.reactivex.rxjava3:rxandroid:3.0.0',
+            rxJava                   : 'io.reactivex.rxjava3:rxjava:3.0.9',
+            notchFit                 : 'com.github.JerryJin93:NotchFit:1.9',
+            systemBarTintManager     : 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+    ]
 }

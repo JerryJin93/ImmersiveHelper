@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GitHubProjects-ImmersiveHelper.iml" filepath="$PROJECT_DIR$/.idea/modules/GitHubProjects-ImmersiveHelper.iml" group="ImmersiveHelper" />
-      <module fileurl="file://$PROJECT_DIR$/ImmersiveHelper.iml" filepath="$PROJECT_DIR$/ImmersiveHelper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ImmersiveHelper-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ImmersiveHelper-app.iml" group="ImmersiveHelper/app" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/helper/com.github.JerryJin93-helper.iml" filepath="$PROJECT_DIR$/.idea/modules/helper/com.github.JerryJin93-helper.iml" group="ImmersiveHelper/helper" />
-      <module fileurl="file://$PROJECT_DIR$/helper/helper.iml" filepath="$PROJECT_DIR$/helper/helper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ImmersiveHelper.iml" filepath="$PROJECT_DIR$/.idea/modules/ImmersiveHelper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ImmersiveHelper.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ImmersiveHelper.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/helper/ImmersiveHelper.helper.iml" filepath="$PROJECT_DIR$/.idea/modules/helper/ImmersiveHelper.helper.iml" />
     </modules>
   </component>
 </project>

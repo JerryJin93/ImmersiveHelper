@@ -1,19 +1,24 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.JerryJin93'
 
+def config = rootProject.ext.configs
+def repository = rootProject.ext.dependencies
+
 android {
-    compileSdkVersion 29
+    compileSdkVersion config.compileSdkVersion
+    buildToolsVersion config.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 29
-        versionCode 6
-        versionName "2.0.0"
+        minSdkVersion config.minSdkVersion
+        targetSdkVersion config.targetSdkVersion
+        versionCode config.versionCode
+        versionName config.versionName
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
     }
 
@@ -31,22 +36,18 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation "com.github.JerryJin93:NotchFit:$rootProject.ext.notchFitVersion"
-    implementation "com.readystatesoftware.systembartint:systembartint:$rootProject.ext.systemBarTintManagerVersion"
-    implementation "androidx.core:core-ktx:+"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation repository.appCompat
+    testImplementation 'junit:junit:4.13.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation repository.notchFit
+    implementation repository.systemBarTintManager
+    implementation repository.ktx
+    implementation repository.kotlinSupport
 
 
-    implementation "androidx.lifecycle:lifecycle-runtime:$rootProject.ext.lifecycleVersion"
-    // alternately - if using Java8, use the following instead of lifecycle-compiler
-    implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.ext.lifecycleVersion"
-}
-repositories {
-    mavenCentral()
+    implementation repository.lifecycleRuntime
+    implementation repository.lifecycleCompilerForJava8
 }

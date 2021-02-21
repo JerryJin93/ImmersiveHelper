@@ -4,21 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import com.jerryjin.kit.notch.AbsNotch;
-import com.jerryjin.kit.utils.LoggerConstants;
+import com.jerryjin.kit.utils.ScreenUtils;
 import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 
 import java.lang.reflect.Method;
 
-import static com.jerryjin.kit.utils.log.Logger.LOGGABLE;
-
 /**
  * Author: Jerry
  * Generated at: 2020/7/26 21:30
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description: Vivo手机刘海屏
  */
@@ -39,6 +37,7 @@ public class VivoNotch extends AbsNotch {
             @SuppressLint("PrivateApi")
             Class<?> FtFeature = classLoader.loadClass("android.util.FtFeature");
             Method method = FtFeature.getMethod("isFeatureSupport", int.class);
+            //noinspection ConstantConditions
             isNotchHardwareSupported = (boolean) method.invoke(FtFeature, VIVO_NOTCH) | (boolean) method.invoke(FtFeature, VIVO_FILLET);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -63,8 +62,8 @@ public class VivoNotch extends AbsNotch {
     @Override
     protected int[] getNotchSpecOreo(Activity activity) {
         return new int[]{
-                Utils.dp2px(activity, 100), //刘海宽度
-                Utils.dp2px(activity, 27) //刘海高度
+                ScreenUtils.dp2intPx(activity, 100), //刘海宽度
+                ScreenUtils.dp2intPx(activity, 27) //刘海高度
         };
     }
 }

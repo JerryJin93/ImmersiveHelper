@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  * Generated at: 2020/7/26 19:21
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description:
  */
@@ -30,11 +30,6 @@ public class Utils {
 
     public static String getModel() {
         return Build.MODEL;
-    }
-
-    public static int dp2px(Context context, float dp) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics) + 0.5f);
     }
 
     public static int getScreenOrientation(Context context) {

@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.jerryjin.kit.notch.AbsNotch;
-import com.jerryjin.kit.utils.LoggerConstants;
 import com.jerryjin.kit.utils.StringHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 import com.jerryjin.kit.utils.statusBar.StatusBarHelper;
 
 import static com.jerryjin.kit.utils.log.Logger.ERR_NULL_ACTIVITY;
-import static com.jerryjin.kit.utils.log.Logger.LOGGABLE;
 
 /**
  * Author: Jerry
@@ -76,7 +74,7 @@ public class OppoNotch extends AbsNotch {
      */
     private int[] getNotchSpecFromSystemProperties() {
         final String methodName = "getNotchSpecFromSystemProperties";
-        String notchSpec = Utils.getStringFromSystemProperties("ro.oppo.screen.heteromorphism");
+        String notchSpec = Utils. getStringFromSystemProperties("ro.oppo.screen.heteromorphism");
         if (TextUtils.isEmpty(notchSpec)) {
             Logger.e(TAG, methodName, "Cannot retrive notchSpec from system properties.");
             return null;

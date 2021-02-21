@@ -19,11 +19,26 @@ import com.jerryjin.kit.utils.Utils;
  * Version: 2.0.0
  * Description:
  */
-public class NotchFactory {
+public final class NotchFactory implements Factory {
 
-    private static INotch notch;
+    private static volatile NotchFactory instance;
+    private INotch notch;
 
-    public static INotch getNotch() {
+    private NotchFactory() {
+    }
+
+    public static NotchFactory getInstance() {
+        if (instance == null) {
+            synchronized (NotchFactory.class) {
+                if (instance == null) {
+                    instance = new NotchFactory();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public INotch getNotch() {
         if (notch == null) {
             String manufacturer = Utils.getManufacturer();
             switch (manufacturer) {

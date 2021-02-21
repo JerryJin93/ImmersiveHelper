@@ -5,7 +5,7 @@ package com.jerryjin.kit.utils
  * Generated at: 2020/8/1 20:47
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description:
  */
@@ -20,6 +20,9 @@ class KotlinCompat {
 
         @JvmStatic
         fun mutableString(str: String) = str.mutate()
+
+        @JvmStatic
+        fun <T> apply(invoker: T, action: T.() -> Unit): T = invoker.apply(action)
     }
 }
 
@@ -30,7 +33,7 @@ class LoggerConstants {
         const val LOG_DELIMITER = "#"
         const val LOG_BRACKET_LEFT = "("
         const val LOG_BRACKET_RIGHT = ")"
-        const val PUSH  = " -> "
+        const val PUSH = " -> "
         const val PATTERN_PARAM_ACTIVITY = "Activity %s"
         const val LOG_ACTIVITY = "Activity"
     }

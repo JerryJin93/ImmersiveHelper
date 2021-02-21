@@ -1,85 +1,79 @@
 package com.jerryjin.immersivehelper;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
-import com.jerryjin.kit.ImmersiveHelper;
-import com.jerryjin.kit.OptimizationType;
-import com.jerryjin.kit.utils.navigationBar.NavigationBarHelper;
+import com.jerryjin.kit.interfaces.OptimizationCallback;
+import com.jerryjin.kit.utils.log.Logger;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
+    private static final String TAG = "MainActivity";
+    private View mainLayout;
     private Button top;
 
-    private ImmersiveHelper helper;
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        initViews();
-
-        String tag = MainActivity.class.getSimpleName();
-        Log.e(tag, "isNavBarShow: " + NavigationBarHelper.isNavBarShow(this));
-
-        // getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // ViewHelper.clearUiOption(MainActivity.this, View.SYSTEM_UI_FLAG_FULLSCREEN);
-            }
-        }, 5000);
+    protected void initView() {
+        super.initView();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
 
-        ImmersiveHelper.enableLogger(true);
-
-        helper = new ImmersiveHelper(this)
-                .setStatusBarMode(false)
-                .setCallback(info -> {
-                    if (info.hasNotch()) {
-                        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) top.getLayoutParams();
-                        params.topMargin = info.getNotchInfo().getNotchHeight();
-                        top.setLayoutParams(params);
-                    } else {
-
-                    }
-                }).setOptimizationType(OptimizationType.TYPE_IMMERSIVE);
-        helper.optimize();
-    }
-
-    private void initViews() {
-        top = findViewById(R.id.immersive_status_bar_with_img_on_top);
+        mainLayout = findViewById(R.id.main);
+        top = findViewById(R.id.immersive);
         top.setOnClickListener(v -> {
-            // TODO: 2019/4/3
-            helper.undoOptimization();
+            startActivity(new Intent(MainActivity.this, DemoImmersiveActivity.class));
         });
 
-        findViewById(R.id.immersive_status_bar_with_solid_color)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // TODO: 2019/4/3  
-                    }
+        findViewById(R.id.fullscreen)
+                .setOnClickListener(v -> {
+                    startActivity(new Intent(MainActivity.this, DemoFullscreenActivity.class));
                 });
+    }
 
-        findViewById(R.id.cutout)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // TODO: 2019/4/3  
-                    }
-                });
+
+    @Override
+    protected OptimizationCallback getOptimizationCallback() {
+        return info -> {
+            LinearLayout.LayoutParams paramsTopButton = (LinearLayout.LayoutParams) top.getLayoutParams();
+            int offset = info.hasNotch() ? info.getNotchInfo().getNotchHeight() : info.getStatusBarHeight();
+            int navBarOffset = info.getNavigationBarHeight();
+            Logger.i(TAG, "callback", info.toString());
+            if (info.isPortrait()) {
+                mainLayout.setPadding(0, 0, 0, 0);
+            } else if (info.isLandscapeLeftwards()) {
+                mainLayout.setPadding(offset, 0, navBarOffset, 0);
+            } else if (info.isReversedLandscape()) {
+                mainLayout.setPadding(navBarOffset, 0, offset, 0);
+            } else if (info.isPortraitUpSideDown()) {
+                mainLayout.setPadding(0, 0, 0, offset);
+            }
+            if (info.hasNotch()) {
+                if (!info.isPortrait()) {
+                    paramsTopButton.topMargin = info.getStatusBarHeight();
+                } else {
+                    paramsTopButton.topMargin = info.getNotchInfo().getNotchHeight();
+                }
+            } else {
+                paramsTopButton.topMargin = info.getStatusBarHeight();
+            }
+            top.setLayoutParams(paramsTopButton);
+        };
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected boolean isStatusBarTextDark() {
+        return true;
     }
 }

@@ -1,4 +1,8 @@
-package com.jerryjin.kit.bean;
+package com.jerryjin.kit.model;
+
+import android.graphics.Rect;
+
+import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
@@ -7,52 +11,34 @@ import java.util.Objects;
  * Generated at: 2020/8/1 19:42
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description:
  */
 public class NotchInfo {
 
-    private String manufacturer;
-    private int notchWidth;
-    private int notchHeight;
+    @Nullable
+    private final Rect notchRect;
+    private final int notchWidth;
+    private final int notchHeight;
 
-    public NotchInfo() {
-    }
-
-    public NotchInfo(String manufacturer, int notchWidth, int notchHeight) {
-        this.manufacturer = manufacturer;
+    public NotchInfo(@Nullable Rect notchRect, int notchWidth, int notchHeight) {
+        this.notchRect = notchRect;
         this.notchWidth = notchWidth;
         this.notchHeight = notchHeight;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
     }
 
     public int getNotchWidth() {
         return notchWidth;
     }
 
-    public void setNotchWidth(int notchWidth) {
-        this.notchWidth = notchWidth;
-    }
-
     public int getNotchHeight() {
         return notchHeight;
     }
 
-    public void setNotchHeight(int notchHeight) {
-        this.notchHeight = notchHeight;
-    }
-
-    public void reset() {
-        this.notchWidth = 0;
-        this.notchHeight = 0;
+    @Nullable
+    public Rect getNotchRect() {
+        return notchRect;
     }
 
     @Override
@@ -62,19 +48,18 @@ public class NotchInfo {
         NotchInfo notchInfo = (NotchInfo) o;
         return notchWidth == notchInfo.notchWidth &&
                 notchHeight == notchInfo.notchHeight &&
-                manufacturer.equals(notchInfo.manufacturer);
+                Objects.equals(notchRect, notchInfo.notchRect);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(manufacturer, notchWidth, notchHeight);
+        return Objects.hash(notchRect, notchWidth, notchHeight);
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public String toString() {
         return "NotchInfo{" +
-                "manufacturer='" + manufacturer + '\'' +
+                "notchRect=" + notchRect +
                 ", notchWidth=" + notchWidth +
                 ", notchHeight=" + notchHeight +
                 '}';

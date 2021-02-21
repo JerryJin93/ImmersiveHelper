@@ -2,29 +2,28 @@ package com.jerryjin.kit;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.util.TypedValue;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.jerryjin.kit.bean.DecorationInfo;
-import com.jerryjin.kit.bean.NotchInfo;
-import com.jerryjin.kit.interfaces.OnOptimizeCallback;
+import com.jerryjin.kit.model.NotchInfo;
+import com.jerryjin.kit.model.SystemUIInfo;
+import com.jerryjin.kit.interfaces.OptimizationCallback;
 import com.jerryjin.kit.lifecycle.ImmersiveLifecycle;
 import com.jerryjin.kit.lifecycle.ImmersiveLifecycleObserver;
 import com.jerryjin.kit.manufacturer.Manufacturer;
+import com.jerryjin.kit.notch.Factory;
 import com.jerryjin.kit.notch.NotchFactory;
 import com.jerryjin.kit.notch.NotchHelper;
 import com.jerryjin.kit.utils.ActivityUIHelper;
-import com.jerryjin.kit.utils.StringHelper;
+import com.jerryjin.kit.utils.OrientationHelper;
 import com.jerryjin.kit.utils.Utils;
 import com.jerryjin.kit.utils.log.Logger;
 import com.jerryjin.kit.utils.navigationBar.NavigationBarHelper;
 import com.jerryjin.kit.utils.statusBar.StatusBarHelper;
 
 import static com.jerryjin.kit.utils.log.Logger.ERR_NULL_ACTIVITY;
+import static com.jerryjin.kit.utils.log.Logger.i;
 import static com.jerryjin.kit.utils.statusBar.StatusBarHelper.setTranslucentStatusBar;
 import static com.jerryjin.kit.utils.statusBar.StatusBarHelper.toggleStatusBarTextColor;
 import static com.jerryjin.kit.utils.statusBar.StatusBarHelper.toggleStatusBarTextColorForMIUI;
@@ -44,11 +43,12 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
     private static final String TAG = "ImmersiveHelper";
 
     private Activity activity;
-    private boolean hasOptimized;
-    private DecorationInfo decorationInfo;
-    private boolean isStatusBarTextDark;
-    private OnOptimizeCallback onOptimizeCallback;
+    private SystemUIInfo systemUIInfo;
+    private boolean isStatusBarTextDark = true;
+    private OptimizationCallback optimizationCallback;
     private OptimizationType optimizationType = OptimizationType.TYPE_IMMERSIVE;
+    private Factory factory = NotchFactory.getInstance();
+    private Configuration config;
 
     private int previousStatusBarColor;
     private int previousNavigationBarColor;
@@ -62,11 +62,16 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
     }
 
     private void saveDecorationColor() {
+        final String methodName = "saveDecorationColor";
         if (activity == null) {
-            Logger.e(TAG, "saveDecorationColor", ERR_NULL_ACTIVITY);
+            Logger.e(TAG, methodName, ERR_NULL_ACTIVITY);
             return;
         }
         Window window = activity.getWindow();
+        if (window == null) {
+            Logger.e(TAG, methodName, "Null window attached.");
+            return;
+        }
         this.previousStatusBarColor = window.getStatusBarColor();
         this.previousNavigationBarColor = window.getNavigationBarColor();
     }
@@ -81,12 +86,19 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
     }
 
 
-    public ImmersiveHelper setCallback(OnOptimizeCallback onOptimizeCallback) {
-        this.onOptimizeCallback = onOptimizeCallback;
+    public ImmersiveHelper setCallback(OptimizationCallback onOptimizeCallback) {
+        this.optimizationCallback = onOptimizeCallback;
         return this;
     }
 
-    public ImmersiveHelper setStatusBarMode(boolean darkMode) {
+    public ImmersiveHelper setFactory(Factory factory) {
+        if (factory != null) {
+            this.factory = factory;
+        }
+        return this;
+    }
+
+    public ImmersiveHelper setStatusBarDarkMode(boolean darkMode) {
         this.isStatusBarTextDark = darkMode;
         return this;
     }
@@ -97,6 +109,7 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
     }
 
     public void optimize() {
+        safetyCheck();
         if (optimizationType == OptimizationType.TYPE_IMMERSIVE) {
             optimizeImmersive();
         } else if (optimizationType == OptimizationType.TYPE_FULLSCREEN) {
@@ -105,35 +118,35 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
     }
 
     private void optimizeImmersive() {
-        NotchHelper.probeNotch(activity, hasNotch -> {
+        ActivityUIHelper.probeNotch(activity, factory, hasNotch -> {
             NotchInfo notchInfo;
             if (hasNotch) {
-                notchInfo = NotchHelper.optimize(activity);
+                notchInfo = NotchHelper.optimize(activity, factory);
             } else {
                 notchInfo = null;
                 setTranslucentStatusBar(activity);
             }
-            hasOptimized = true;
             toggleStatusBarTextColor(activity, isStatusBarTextDark);
             if (Utils.getManufacturer().toLowerCase().equals(Manufacturer.MI)) {
                 toggleStatusBarTextColorForMIUI(activity, isStatusBarTextDark);
             }
-            if (onOptimizeCallback != null) {
-                decorationInfo = new DecorationInfo.Builder()
-                        .setOrientation(activity.getResources().getConfiguration().orientation)
+            if (optimizationCallback != null) {
+                Logger.e(TAG, "orientation", OrientationHelper.parseOrientation(OrientationHelper.getCurrentOrientation(activity)));
+                systemUIInfo = new SystemUIInfo.Builder()
+                        .setOrientation(OrientationHelper.getCurrentOrientation(activity))
                         .setNotchInfo(notchInfo)
+                        .setWhetherNavigationBarShow(NavigationBarHelper.isNavBarShown(activity))
                         .setStatusBarHeight(StatusBarHelper.getStatusBarHeight(activity))
                         .setNavigationBarHeight(NavigationBarHelper.getNavBarHeight(activity))
                         .build();
-                onOptimizeCallback.onOptimized(decorationInfo);
+                optimizationCallback.onOptimized(systemUIInfo);
             }
         });
     }
 
 
     private void optimizeFullScreen() {
-        ActivityUIHelper.fullScreen(activity);
-        hasOptimized = true;
+        ActivityUIHelper.fullScreen(activity, factory);
         if (activity == null) {
             Logger.e(TAG, "optimizeFullScreen", ERR_NULL_ACTIVITY);
             return;
@@ -142,82 +155,33 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
         if (Utils.getManufacturer().toLowerCase().equals(Manufacturer.MI)) {
             toggleStatusBarTextColorForMIUI(activity, isStatusBarTextDark);
         }
-        if (onOptimizeCallback != null) {
+        if (optimizationCallback != null) {
             activity.getWindow().getDecorView().post(() -> {
-                decorationInfo = new DecorationInfo.Builder()
-                        .setOrientation(activity.getResources().getConfiguration().orientation)
-                        .setNotchInfo(NotchFactory.getNotch().obtainNotch(activity))
+                systemUIInfo = new SystemUIInfo.Builder()
+                        .setOrientation(OrientationHelper.getCurrentOrientation(activity))
+                        .setNotchInfo(factory.getNotch().obtainNotch(activity))
                         .setStatusBarHeight(StatusBarHelper.getStatusBarHeight(activity))
+                        .setWhetherNavigationBarShow(NavigationBarHelper.isNavBarShown(activity))
                         .setNavigationBarHeight(NavigationBarHelper.getNavBarHeight(activity))
                         .build();
-                onOptimizeCallback.onOptimized(decorationInfo);
+                optimizationCallback.onOptimized(systemUIInfo);
             });
         }
     }
 
-    public void undoOptimization() {
-        if (optimizationType == OptimizationType.TYPE_IMMERSIVE) {
-            undoOptimizationForImmersive();
-        } else if (optimizationType == OptimizationType.TYPE_FULLSCREEN) {
-            undoOptimizationForFullScreen();
-        }
-    }
-
-    private void undoOptimizationForImmersive() {
-        hasOptimized = NotchHelper.undoOptimization(activity, previousStatusBarColor, previousNavigationBarColor);
-        if (onOptimizeCallback != null) {
-            if (decorationInfo == null) {
-                throw new IllegalStateException("You cannot undo optimization for immersive after disposing.");
-            }
-            NotchInfo notchInfo = decorationInfo.getNotchInfo();
-            if (notchInfo != null) {
-                notchInfo.reset();
-            }
-            onOptimizeCallback.onOptimized(decorationInfo);
-        }
-    }
-
-    private void undoOptimizationForFullScreen() {
-        if (ActivityUIHelper.isFullScreen(activity)) {
-            ActivityUIHelper.undoOptimizationForFullScreen(activity);
-            hasOptimized = false;
-            if (onOptimizeCallback != null) {
-                if (decorationInfo == null) {
-                    throw new IllegalStateException("You cannot undo optimization for fullscreen after disposing.");
-                }
-                if (decorationInfo.hasNotch()) {
-                    decorationInfo.resetNotchInfo();
-                }
-                onOptimizeCallback.onOptimized(decorationInfo);
-            }
-        }
-    }
-
-    public void notifyConfigurationChanged(Configuration config) {
-        if (decorationInfo == null) {
-            throw new IllegalStateException("You cannot call notifyConfigurationChanged after disposing.");
-        }
-        if (!hasOptimized) {
-            Logger.i(TAG, "notifyConfigurationChanged", StringHelper.format("Configuration %s", config.toString()), "Not optimized yet, let's optimize it.");
-            optimize();
-        }
-        decorationInfo.setOrientation(config.orientation);
-        if (onOptimizeCallback != null) {
-            onOptimizeCallback.onOptimized(decorationInfo);
+    private void safetyCheck() {
+        if (factory.getNotch() == null) {
+            throw new IllegalArgumentException("Null notch instance is not allowed!");
         }
     }
 
     public void notifyWindowFocusChanged() {
-        if (decorationInfo == null) {
-            throw new IllegalStateException("You cannot call notifyWindowFocusChanged after disposing.");
-        }
-        if (!hasOptimized) {
-            Logger.i(TAG, "notifyWindowFocusChanged", "Not optimized yet, let's optimize it.");
-            optimize();
-        }
-        if (ActivityUIHelper.needOptimizeNavigationBar(activity) && onOptimizeCallback != null) {
-            onOptimizeCallback.onOptimized(decorationInfo);
-        }
+        optimize();
+    }
+
+    public void notifyConfigurationChanged(Configuration newConfig) {
+        this.config = newConfig;
+        optimize();
     }
 
     @Override
@@ -227,13 +191,13 @@ public class ImmersiveHelper implements ImmersiveLifecycle {
 
     private void initState() {
         activity = null;
-        hasOptimized = false;
-        decorationInfo = null;
+        systemUIInfo = null;
         isStatusBarTextDark = false;
         optimizationType = OptimizationType.TYPE_IMMERSIVE;
-        onOptimizeCallback = null;
+        optimizationCallback = null;
+        config = null;
         // PhoneWindow#generateLayout()
-        this.previousStatusBarColor = Color.parseColor("#0xFF000000");
-        this.previousNavigationBarColor = Color.parseColor("#0xFF000000");
+        this.previousStatusBarColor = 0;
+        this.previousNavigationBarColor = 0;
     }
 }

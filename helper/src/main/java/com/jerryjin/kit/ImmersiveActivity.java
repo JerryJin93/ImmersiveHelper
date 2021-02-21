@@ -6,14 +6,17 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.jerryjin.kit.interfaces.OnOptimizeCallback;
+import com.jerryjin.kit.interfaces.OptimizationCallback;
+import com.jerryjin.kit.utils.KotlinCompat;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: Jerry
  * Generated at: 2019/4/10 10:37 PM
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description:
  */
@@ -24,10 +27,11 @@ public abstract class ImmersiveActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        helper.setCallback(getOptimizationCallback())
-                .setStatusBarMode(isStatusBarTextLight())
-                .setOptimizationType(getOptimizationType())
-                .optimize();
+        KotlinCompat.apply(helper.setCallback(getOptimizationCallback()), helper -> {
+            onPreOptimize(helper.setStatusBarDarkMode(isStatusBarTextDark())
+                    .setOptimizationType(getOptimizationType()));
+            return null;
+        }).optimize();
     }
 
     @Override
@@ -37,17 +41,27 @@ public abstract class ImmersiveActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NotNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         helper.notifyConfigurationChanged(newConfig);
     }
 
-    protected abstract OnOptimizeCallback getOptimizationCallback();
+    protected abstract OptimizationCallback getOptimizationCallback();
 
     protected OptimizationType getOptimizationType() {
         return OptimizationType.TYPE_IMMERSIVE;
     }
 
-    protected abstract boolean isStatusBarTextLight();
+    /**
+     * Get the text color of status bar.
+     *
+     * @return True if the text is in dark color, false otherwise.
+     */
+    protected boolean isStatusBarTextDark() {
+        return false;
+    }
+
+    protected void onPreOptimize(ImmersiveHelper helper) {
+    }
 
 }

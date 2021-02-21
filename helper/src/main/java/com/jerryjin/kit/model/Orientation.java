@@ -1,8 +1,8 @@
-package com.jerryjin.kit.bean;
-
-import android.content.res.Configuration;
+package com.jerryjin.kit.model;
 
 import androidx.annotation.IntDef;
+
+import com.jerryjin.kit.OrientationSpec;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,6 +20,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.FIELD, ElementType.PARAMETER})
-@IntDef({Configuration.ORIENTATION_UNDEFINED, Configuration.ORIENTATION_PORTRAIT, Configuration.ORIENTATION_LANDSCAPE})
+@IntDef({OrientationSpec.PORTRAIT, OrientationSpec.LANDSCAPE, OrientationSpec.LANDSCAPE_REVERSED, OrientationSpec.PORTRAIT_REVERSED})
 public @interface Orientation {
 }

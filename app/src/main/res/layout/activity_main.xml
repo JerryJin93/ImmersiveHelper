@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,21 +9,17 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/immersive_status_bar_with_img_on_top"
+        android:id="@+id/immersive"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/immersive_status_bar_with_img_on_top"/>
+        android:textAllCaps="false"
+        android:text="@string/text_demo_immersive_activity"/>
 
     <Button
-        android:id="@+id/immersive_status_bar_with_solid_color"
+        android:id="@+id/fullscreen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/immersive_status_bar_with_solid_color"/>
-
-    <Button
-        android:id="@+id/cutout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/cutout"/>
+        android:textAllCaps="false"
+        android:text="@string/text_demo_fullscreen_activity"/>
 
 </LinearLayout>
