@@ -36,9 +36,11 @@ dependencies {
 ImmersiveHelper.enableLogger(true);
 ```
 
-A. 在需要适配的Activity扩展(extends)[ImmersiveActivity](../helper/src/main/java/com/jerryjin/kit/ImmersiveActivity.java)
+<b>A. 在需要适配的Activity扩展(extends)[ImmersiveActivity](../helper/src/main/java/com/jerryjin/kit/ImmersiveActivity.java)</b>
 
-然后重写以下的三个方法：
+<b>(强烈推荐用此方法适配)</b>
+
+然后重写以下的四个方法：
 
 ```java
 // 必选
@@ -55,6 +57,8 @@ ImmersiveHelper将自动帮您完成适配工作。
 
 B. 在自己的Activity的onCreate方法中调用(若需要适配的Activity不是AppCompatActivity的派生类，则只能用此方法，否则会引发内存泄漏)：
 
+Java
+
 ```java
 private ImmersiveHelper helper;
 
@@ -68,7 +72,7 @@ protected void onCreate(Bundle savedInstanceState) {
     ...;
     ...;
     helper = new ImmersiveHelper(this);
-    helper.setStatusBarDarkMode(mode)
+    helper.setStatusBarDarkMode(true)
         .setCallback(new OptimizationCallback() {
             @Override
             public void onOptimized(SystemUIInfo info) {
@@ -80,6 +84,33 @@ protected void onCreate(Bundle savedInstanceState) {
             }
         }).setOptimizationType(type)
         .optimize();
+}
+```
+
+Kotlin
+
+```kotlin
+private val helper: ImmersiveHelper by lazy {
+        ImmersiveHelper(this)
+    }
+
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(xxx);
+    xxx;
+    xxx;
+    ...;
+    ...;
+    ...;
+    helper.setStatusBarDarkMode(mode)
+                .setOptimizationType(type)
+                .setCallback {
+					if(it.hasNotch()) {
+                        // 处理刘海屏适配逻辑
+                    } else {
+                        // 处理非刘海屏的适配逻辑
+                    }
+                }.optimize()
 }
 ```
 
@@ -107,14 +138,17 @@ public void onConfigurationChanged(Configuration newConfig) {
 
 ### OptimizationType
 
-```java
-TYPE_IMMERSIVE;  // 沉浸式状态栏
-TYPE_FULLSCREEN; // 沉浸式全屏
-```
+##### TYPE_IMMERSIVE  
+
+沉浸式状态栏，在此模式下状态栏和导航栏(如果存在的话)会覆盖在contentView上，您需要根据回调设置margin或者padding。如果仅通过改变状态栏颜色就可达到沉浸式效果的话可以不使用ImmersiveHelper而直接调用StatusBarHelper.setStatusBarBackgroundColor(Activity activity, int backgroundColor)方法实现
+
+##### TYPE_FULLSCREEN
+
+全屏显示
 
 
 
-### [SystemUIInfo](../helper/src/main/java/com/jerryjin/kit/model/SystemUIInfo.java)
+### OptimizationCallback的形参[SystemUIInfo](../helper/src/main/java/com/jerryjin/kit/model/SystemUIInfo.java)
 
 #### 属性：
 

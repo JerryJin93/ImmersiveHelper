@@ -3,7 +3,6 @@ package com.jerryjin.immersivehelper
 import android.content.pm.ActivityInfo
 import android.util.Log
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.jerryjin.kit.ImmersiveHelper
 import com.jerryjin.kit.OptimizationType
 import com.jerryjin.kit.interfaces.OptimizationCallback
 import com.jerryjin.kit.utils.log.Logger
@@ -44,7 +43,7 @@ class DemoFullscreenActivity : BaseActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        NavigationBarHelper.isNavBarShown(this) { isShowing, height->
+        NavigationBarHelper.isNavBarShown(this) { isShowing, height ->
             Log.e("ImmersiveHelper", "NaviShow2 $isShowing")
         }
     }

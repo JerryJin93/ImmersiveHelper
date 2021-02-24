@@ -21,8 +21,8 @@ import java.lang.reflect.Method;
  * Generated at: 2019/3/13 9:58
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
- * Version: 1.0.2
+ * WeChat: AcornLake
+ * Version: 2.0.0
  * Description:
  */
 @SuppressWarnings("WeakerAccess")
@@ -39,6 +39,7 @@ public class StatusBarHelper {
     public static final int DEFAULT_OFFSET = 20;
     private static final String TAG = StatusBarHelper.class.getSimpleName();
 
+    @SuppressLint("ObsoleteSdkInt")
     public static void setStatusBarBackgroundColor(Activity activity, int backgroundColor) {
         if (activity == null) {
             Log.e(TAG, "Null given activity.");

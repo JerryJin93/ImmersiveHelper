@@ -1,0 +1,20 @@
+Index: app/src/main/java/com/jerryjin/immersivehelper/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/jerryjin/immersivehelper/MainActivity.java	(date 1596544816105)
++++ app/src/main/java/com/jerryjin/immersivehelper/MainActivity.java	(date 1596544816105)
+@@ -79,6 +79,12 @@
+         helper.optimize();
+     }
+ 
++    @Override
++    public void onAttachedToWindow() {
++        super.onAttachedToWindow();
++
++    }
++
+     private void initViews() {
+         mainLayout = findViewById(R.id.main);
+         top = findViewById(R.id.immersive_status_bar_with_img_on_top);
