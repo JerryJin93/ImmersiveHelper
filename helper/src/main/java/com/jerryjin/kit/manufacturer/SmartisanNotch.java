@@ -15,8 +15,8 @@ import java.lang.reflect.Method;
  * Generated at: 2020/8/3 18:52
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
- * Version:
+ * WeChat: AcornLake
+ * Version: 2.0.0
  * Description: 锤子手机刘海屏
  */
 @SuppressWarnings("SpellCheckingInspection")

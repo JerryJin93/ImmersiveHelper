@@ -23,6 +23,9 @@ class KotlinCompat {
 
         @JvmStatic
         fun <T> apply(invoker: T, action: T.() -> Unit): T = invoker.apply(action)
+
+        @JvmStatic
+        fun <T, R> withAction(receiver: T, block: T.() -> R) = with(receiver, block)
     }
 }
 

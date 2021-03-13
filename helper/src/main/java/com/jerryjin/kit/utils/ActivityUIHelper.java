@@ -73,7 +73,7 @@ public class ActivityUIHelper {
             return false;
         }
         Window window = activity.getWindow();
-        return factory.getNotch().isNotchApplied() && window.getStatusBarColor() == Color.TRANSPARENT &&
+        return window.getStatusBarColor() == Color.TRANSPARENT &&
                 ((window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION) == View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     }
 

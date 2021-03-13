@@ -15,7 +15,7 @@ import com.jerryjin.kit.utils.Utils;
  * Generated at: 2020/7/26 20:48
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description:
  */
@@ -25,6 +25,31 @@ public final class NotchFactory implements Factory {
     private INotch notch;
 
     private NotchFactory() {
+        initNotch();
+    }
+
+    private void initNotch() {
+        String manufacturer = Utils.getManufacturer();
+        switch (manufacturer) {
+            case Manufacturer.MI:
+                notch = new XiaoMiNotch();
+                break;
+            case Manufacturer.HUAWEI:
+                notch = new HuaweiNotch();
+                break;
+            case Manufacturer.OPPO:
+                notch = new OppoNotch();
+                break;
+            case Manufacturer.VIVO:
+                notch = new VivoNotch();
+                break;
+            case Manufacturer.SMARTISAN:
+                notch = new SmartisanNotch();
+                break;
+            default:
+                notch = new AndroidNotch();
+                break;
+        }
     }
 
     public static NotchFactory getInstance() {
@@ -39,29 +64,6 @@ public final class NotchFactory implements Factory {
     }
 
     public INotch getNotch() {
-        if (notch == null) {
-            String manufacturer = Utils.getManufacturer();
-            switch (manufacturer) {
-                case Manufacturer.MI:
-                    notch = new XiaoMiNotch();
-                    break;
-                case Manufacturer.HUAWEI:
-                    notch = new HuaweiNotch();
-                    break;
-                case Manufacturer.OPPO:
-                    notch = new OppoNotch();
-                    break;
-                case Manufacturer.VIVO:
-                    notch = new VivoNotch();
-                    break;
-                case Manufacturer.SMARTISAN:
-                    notch = new SmartisanNotch();
-                    break;
-                default:
-                    notch = new AndroidNotch();
-                    break;
-            }
-        }
         return notch;
     }
 }

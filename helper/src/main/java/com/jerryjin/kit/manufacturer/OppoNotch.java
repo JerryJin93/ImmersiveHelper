@@ -16,7 +16,7 @@ import static com.jerryjin.kit.utils.log.Logger.ERR_NULL_ACTIVITY;
  * Generated at: 2020/7/26 21:29
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description: OPPO手机刘海屏
  */

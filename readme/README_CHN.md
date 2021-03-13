@@ -1,13 +1,18 @@
 # ImmersiveHelper
-### Android刘海屏一键适配
+#### Android刘海屏一键适配
+
++ 支持Android O时代的部分厂商有刘海屏/水滴屏机型的适配
++ 支持Android P及以上版本的刘海屏/水滴屏适配
++ 支持根据屏幕方向自动适配
++ 无内存泄漏
 
 
 
 ### 添加依赖
 
-先在项目的build.gradle文件中添加：
+先在项目的根build.gradle文件中添加：
 
-```
+```groovy
 allprojects {
 	repositories {
 		...
@@ -16,17 +21,17 @@ allprojects {
 }
 ```
 
-
-
 然后在需要用到ImmersiveHelper的模块的build.gradle文件中添加：
 
-```
+```groovy
 dependencies {
 	implementation 'com.github.JerryJin93:ImmersiveHelper:2.0.0'
 }
 ```
 
 此外，您的项目需要支持`AndroidX`.
+
+
 
 ### 使用方法
 
@@ -55,9 +60,9 @@ protected void onPreOptimize(ImmersiveHelper helper);
 
 ImmersiveHelper将自动帮您完成适配工作。
 
-B. 在自己的Activity的onCreate方法中调用(若需要适配的Activity不是AppCompatActivity的派生类，则只能用此方法，否则会引发内存泄漏)：
+B. 在自己的Activity的onCreate方法中调用：
 
-Java
+**Java**
 
 ```java
 private ImmersiveHelper helper;
@@ -87,7 +92,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-Kotlin
+**Kotlin**
 
 ```kotlin
 private val helper: ImmersiveHelper by lazy {
@@ -105,6 +110,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     helper.setStatusBarDarkMode(mode)
                 .setOptimizationType(type)
                 .setCallback {
+                    // it的类型是SystemUIInfo
 					if(it.hasNotch()) {
                         // 处理刘海屏适配逻辑
                     } else {
@@ -136,7 +142,9 @@ public void onConfigurationChanged(Configuration newConfig) {
 
 
 
-### OptimizationType
+### 一些类的说明
+
+#### OptimizationType
 
 ##### TYPE_IMMERSIVE  
 
@@ -148,9 +156,9 @@ public void onConfigurationChanged(Configuration newConfig) {
 
 
 
-### OptimizationCallback的形参[SystemUIInfo](../helper/src/main/java/com/jerryjin/kit/model/SystemUIInfo.java)
+#### OptimizationCallback的形参[SystemUIInfo](../helper/src/main/java/com/jerryjin/kit/model/SystemUIInfo.java)
 
-#### 属性：
+属性：
 
 |             名称              |           作用           |
 | :---------------------------: | :----------------------: |
@@ -161,7 +169,7 @@ public void onConfigurationChanged(Configuration newConfig) {
 |     statusBarHeight: Int      |        状态栏高度        |
 |   navigationBarHeight: Int    |        导航栏高度        |
 
-#### 方法：
+方法：
 
 |              名称               |            作用            |
 | :-----------------------------: | :------------------------: |
@@ -173,9 +181,9 @@ public void onConfigurationChanged(Configuration newConfig) {
 
 
 
-### [NotchInfo](../helper/src/main/java/com/jerryjin/kit/model/NotchInfo.java)
+#### [NotchInfo](../helper/src/main/java/com/jerryjin/kit/model/NotchInfo.java)
 
-#### 属性：
+属性：
 
 |       名称       |              作用              |
 | :--------------: | :----------------------------: |
@@ -185,6 +193,6 @@ public void onConfigurationChanged(Configuration newConfig) {
 
 
 
-### Factory
+#### [Factory](../helper/src/main/java/com/jerryjin/kit/interfaces/Factory.java)
 
-您可自定义Factory替换ImmersiveHelper的默认NotchFactory
+您可自定义抽象工厂Factory替换ImmersiveHelper的默认[NotchFactory](../helper/src/main/java/com/jerryjin/kit/notch/NotchFactory.java)以自定义适配规则。

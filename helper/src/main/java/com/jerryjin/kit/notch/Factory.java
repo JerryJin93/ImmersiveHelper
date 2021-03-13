@@ -7,7 +7,7 @@ import com.jerryjin.kit.interfaces.INotch;
  * Generated at: 2020/8/7 21:54
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
  * Description:
  */

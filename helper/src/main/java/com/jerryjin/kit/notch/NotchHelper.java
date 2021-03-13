@@ -32,11 +32,6 @@ public class NotchHelper {
         }
         ActivityUIHelper.immersive(activity);
         INotch notch = factory.getNotch();
-
-        if (!notch.isNotchApplied()) {
-            notch.applyNotch(activity, true);
-        }
-
         return notch.obtainNotch(activity);
     }
 }

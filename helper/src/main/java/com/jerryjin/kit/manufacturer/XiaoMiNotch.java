@@ -62,7 +62,6 @@ public class XiaoMiNotch extends AbsNotch {
             Method method = Window.class.getMethod("addExtraFlags", int.class);
             method.invoke(activity.getWindow(), FLAG_NOTCH);
             Logger.i(TAG, methodName, param, StringHelper.format("We have applied notch on XiaoMi device %s.", Utils.getModel()));
-            notifyNotchStatus(true);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             Logger.e(TAG, methodName, param, StringHelper.format("NoSuchMethodException e: %s.", e.getMessage()));
@@ -96,7 +95,6 @@ public class XiaoMiNotch extends AbsNotch {
             Method method = Window.class.getMethod("clearExtraFlags", int.class);
             method.invoke(activity.getWindow(), FLAG_NOTCH);
             Logger.i(TAG, methodName, param, StringHelper.format("We have recovered notch on XiaoMi device %s.", Utils.getModel()));
-            notifyNotchStatus(false);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             Logger.e(TAG, methodName, param, StringHelper.format("NoSuchMethodException e: %s.", e.getMessage()));

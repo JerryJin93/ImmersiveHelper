@@ -18,7 +18,5 @@ public interface INotch {
 
     boolean hasNotch(Activity activity);
 
-    boolean isNotchApplied();
-
     NotchInfo obtainNotch(Activity activity);
 }

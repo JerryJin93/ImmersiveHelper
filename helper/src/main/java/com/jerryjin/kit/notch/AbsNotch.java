@@ -9,9 +9,9 @@ import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
 
-import com.jerryjin.kit.model.NotchInfo;
 import com.jerryjin.kit.OrientationSpec;
 import com.jerryjin.kit.interfaces.INotch;
+import com.jerryjin.kit.model.NotchInfo;
 import com.jerryjin.kit.utils.LoggerConstants;
 import com.jerryjin.kit.utils.OrientationHelper;
 import com.jerryjin.kit.utils.StringHelper;
@@ -37,7 +37,6 @@ public abstract class AbsNotch implements INotch {
     private static final String MSG_NO_NOTCH_DETECTED = "No notch detected.";
     protected static final int[] ZERO_NOTCH = {0, 0};
 
-    private boolean isNotchApplied;
     private final String tag;
 
     public AbsNotch() {
@@ -92,7 +91,6 @@ public abstract class AbsNotch implements INotch {
         WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
         lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         activity.getWindow().setAttributes(lp);
-        isNotchApplied = true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -104,7 +102,6 @@ public abstract class AbsNotch implements INotch {
         WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
         lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
         activity.getWindow().setAttributes(lp);
-        isNotchApplied = false;
     }
 
     protected abstract boolean hasNotchOreo(Activity activity);
@@ -228,14 +225,5 @@ public abstract class AbsNotch implements INotch {
                     "Current OS version is under Android O, we assert there is no Notch available.");
             return false;
         }
-    }
-
-    protected void notifyNotchStatus(boolean applied) {
-        this.isNotchApplied = applied;
-    }
-
-    @Override
-    public boolean isNotchApplied() {
-        return isNotchApplied;
     }
 }
