@@ -1,7 +1,7 @@
 # ImmersiveHelper
 #### A convenient tool for immersive UI experience on Android devices.
 
-**Features: **
+##### Features
 
 * Support optimization for devices base on Android O with notch.
 * Support optimization for devices whose OS version above Android P.
@@ -198,7 +198,7 @@ properties:
 
 
 
-#### [Factory](../helper/src/main/java/com/jerryjin/kit/interfaces/Factory.java)
+#### [Factory](../helper/src/main/java/com/jerryjin/kit/notch/Factory.java)
 
 You can use your own abstract factory to replace the default one in ImmersiveHelper so that you can apply your own optimization rules.
 

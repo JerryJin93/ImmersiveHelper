@@ -193,6 +193,6 @@ public void onConfigurationChanged(Configuration newConfig) {
 
 
 
-#### [Factory](../helper/src/main/java/com/jerryjin/kit/interfaces/Factory.java)
+#### [Factory](../helper/src/main/java/com/jerryjin/kit/notch/Factory.java)
 
 您可自定义抽象工厂Factory替换ImmersiveHelper的默认[NotchFactory](../helper/src/main/java/com/jerryjin/kit/notch/NotchFactory.java)以自定义适配规则。
