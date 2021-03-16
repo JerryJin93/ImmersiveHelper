@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
  * Blog:
  * WeChat: AcornLake
  * Version: 2.0.0
- * Description: 锤子手机刘海屏
+ * Description: 锤子手机刘海屏 OK
  */
 @SuppressWarnings("SpellCheckingInspection")
 public class SmartisanNotch extends AbsNotch {

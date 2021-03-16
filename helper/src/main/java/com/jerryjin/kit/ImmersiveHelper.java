@@ -33,9 +33,9 @@ import static com.jerryjin.kit.utils.statusBar.StatusBarHelper.toggleStatusBarTe
  * Generated at: 2019/3/27 12:38 AM
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
- * Description:
+ * Description: ImmersiveHelper.
  */
 @SuppressWarnings("WeakerAccess")
 public class ImmersiveHelper implements ImmersiveLifecycle {

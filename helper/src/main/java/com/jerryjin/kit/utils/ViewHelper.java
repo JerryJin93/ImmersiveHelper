@@ -11,7 +11,7 @@ import static com.jerryjin.kit.utils.log.Logger.ERR_NULL_ACTIVITY;
  * Generated at: 2019/4/1 10:46 PM
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 1.0.2
  * Description:
  */

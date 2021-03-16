@@ -23,9 +23,9 @@ import java.lang.reflect.Method;
  * Generated at: 2020/7/26 21:23
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
- * Description: 华为手机刘海屏
+ * Description: 华为手机刘海屏 OK
  */
 @SuppressWarnings("SpellCheckingInspection")
 public class HuaweiNotch extends AbsNotch {

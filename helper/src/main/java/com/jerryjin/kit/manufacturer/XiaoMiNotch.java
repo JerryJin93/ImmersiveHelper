@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  * Blog:
  * WeChat: AcornLake
  * Version: 2.0.0
- * Description: Android P以下小米手机刘海屏适配
+ * Description: Android P以下小米手机刘海屏适配 OK
  */
 @SuppressWarnings("SpellCheckingInspection")
 public class XiaoMiNotch extends AbsNotch {

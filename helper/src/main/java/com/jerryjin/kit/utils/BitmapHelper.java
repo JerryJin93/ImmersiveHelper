@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
  * Generated at: 2019/3/31 4:45 PM
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 1.0.0
  * Description:
  */

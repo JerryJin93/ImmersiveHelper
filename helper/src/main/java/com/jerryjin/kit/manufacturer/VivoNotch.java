@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  * Blog:
  * WeChat: AcornLake
  * Version: 2.0.0
- * Description: Vivo手机刘海屏
+ * Description: Vivo手机刘海屏 OK
  */
 @SuppressWarnings("SpellCheckingInspection")
 public class VivoNotch extends AbsNotch {

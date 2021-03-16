@@ -13,7 +13,7 @@ import com.jerryjin.kit.utils.log.Logger;
  * Blog:
  * WeChat: AcornLake
  * Version: 2.0.0
- * Description: For non-domestic Android devices only.
+ * Description: For non-domestic Android devices only. OK
  */
 public class AndroidNotch extends AbsNotch {
 

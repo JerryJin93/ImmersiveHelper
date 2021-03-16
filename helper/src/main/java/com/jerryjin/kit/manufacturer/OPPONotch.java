@@ -18,10 +18,10 @@ import static com.jerryjin.kit.utils.log.Logger.ERR_NULL_ACTIVITY;
  * Blog:
  * WeChat: AcornLake
  * Version: 2.0.0
- * Description: OPPO手机刘海屏
+ * Description: OPPO手机刘海屏 OK
  */
 @SuppressWarnings("SpellCheckingInspection")
-public class OppoNotch extends AbsNotch {
+public class OPPONotch extends AbsNotch {
 
     private static final String TAG = "OppoNotch";
 
@@ -74,7 +74,7 @@ public class OppoNotch extends AbsNotch {
      */
     private int[] getNotchSpecFromSystemProperties() {
         final String methodName = "getNotchSpecFromSystemProperties";
-        String notchSpec = Utils. getStringFromSystemProperties("ro.oppo.screen.heteromorphism");
+        String notchSpec = Utils.getStringFromSystemProperties("ro.oppo.screen.heteromorphism");
         if (TextUtils.isEmpty(notchSpec)) {
             Logger.e(TAG, methodName, "Cannot retrive notchSpec from system properties.");
             return null;

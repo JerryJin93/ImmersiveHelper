@@ -58,7 +58,6 @@ ext {
             recyclerView             : 'androidx.recyclerview:recyclerview:1.1.0',
             rxAndroid                : 'io.reactivex.rxjava3:rxandroid:3.0.0',
             rxJava                   : 'io.reactivex.rxjava3:rxjava:3.0.9',
-            notchFit                 : 'com.github.JerryJin93:NotchFit:1.9',
             systemBarTintManager     : 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     ]
 }

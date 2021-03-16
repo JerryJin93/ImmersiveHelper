@@ -10,9 +10,9 @@ import java.util.Objects;
  * Generated at: 2020/7/26 19:17
  * GitHub: https://github.com/JerryJin93
  * Blog:
- * WeChat: enGrave93
+ * WeChat: AcornLake
  * Version: 2.0.0
- * Description:
+ * Description: A Java bean for optimization callback.
  */
 public class SystemUIInfo {
 

@@ -4,7 +4,7 @@ import com.jerryjin.kit.interfaces.INotch;
 import com.jerryjin.kit.manufacturer.AndroidNotch;
 import com.jerryjin.kit.manufacturer.HuaweiNotch;
 import com.jerryjin.kit.manufacturer.Manufacturer;
-import com.jerryjin.kit.manufacturer.OppoNotch;
+import com.jerryjin.kit.manufacturer.OPPONotch;
 import com.jerryjin.kit.manufacturer.SmartisanNotch;
 import com.jerryjin.kit.manufacturer.VivoNotch;
 import com.jerryjin.kit.manufacturer.XiaoMiNotch;
@@ -38,7 +38,7 @@ public final class NotchFactory implements Factory {
                 notch = new HuaweiNotch();
                 break;
             case Manufacturer.OPPO:
-                notch = new OppoNotch();
+                notch = new OPPONotch();
                 break;
             case Manufacturer.VIVO:
                 notch = new VivoNotch();

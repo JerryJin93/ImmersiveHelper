@@ -47,7 +47,7 @@ ImmersiveHelper.enableLogger(true);
 
 There are two ways to use this library.
 
-<b>A.</b> Extend the Activity you want to optimize directly to the ImmersiveActivity, **which I highly recommend.**
+<b>A.</b> Extend the Activity you want to optimize directly or indirectly to the ImmersiveActivity, **which I highly recommend.**
 
 In ImmersiveActivity, **there are four methods you can override**.
 
